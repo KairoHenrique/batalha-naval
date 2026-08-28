@@ -40,11 +40,18 @@ dificuldades e como foram superadas. Preencher no mesmo dia do código.
 
 ### T3. `navios.py` — tipos, auto-place, conferência
 
-- **Data:**
-- **O que foi feito:**
-- **Dificuldades:**
-- **Como foram superadas:**
-- **Anotações:** *(ainda não iniciado — parado no T2)*
+- **Data:** 28/08/2026
+- **O que foi feito:** Módulo `navios.py` com frota 2 grandes (4) + 3 pequenos (2).
+  `gerar_frota()` posiciona sem sair do tabuleiro e sem overlap (RF03/RF04).
+  `conferir_posicionamento()` mostra o tabuleiro e a lista de coordenadas;
+  C confirma e R gera outra disposição (RF10). Demonstração: `python navios.py`.
+- **Dificuldades:** Sortear início aleatório em qualquer casa gerava muitos
+  rejeitos (navio saía do 10x10). Encaixar 5 navios às cegas podia falhar.
+- **Como foram superadas:** O segmento já nasce cabendo no tabuleiro
+  (`TAMANHO - comprimento`). Grandes são posicionados primeiro. Se um navio
+  não encaixa, a frota inteira é gerada de novo (até 80 tentativas).
+- **Anotações:** Conferência ainda é chamada direto pelo módulo; o T4 (menu)
+  é quem vai disparar isso na partida. Validação: 40 frotas sem overlap.
 
 ### T4. `main.py` + `menu.py`
 
