@@ -77,11 +77,11 @@ Fluxo até o T3: coordenada → matriz → frota visível para conferência.
 
 ```mermaid
 flowchart TD
-    A["utils.parse_coordenada C5"] --> B["tabuleiro 10x10"]
-    B --> C["navios.gerar_frota"]
-    C --> D{"RF10 conferência"}
-    D -->|"C confirmar"| E["frota travada"]
-    D -->|"R reposicionar"| C
+    parseCoord["utils.parse_coordenada C5"] --> board["tabuleiro 10 por 10"]
+    board --> gerarFrota["navios.gerar_frota"]
+    gerarFrota --> conferencia{"RF10 conferencia"}
+    conferencia -->|C confirmar| frotaOk["frota travada"]
+    conferencia -->|R reposicionar| gerarFrota
 ```
 
 **O que cada módulo faz, em detalhe:**
