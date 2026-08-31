@@ -18,7 +18,7 @@ Entrega: **29/09/2026**, pelo SIGAA, com o link deste repositório. Apresentaç�
 
 O núcleo do jogo é Python 3.10+ (aqui, 3.12), sem dependências externas no modo texto. A lógica de cada RF fica no módulo correspondente — exigência do enunciado quando pede *função*.
 
-Trabalho **individual**. Estado atual: Semana 3, **T5 concluído** (PvC jogável). Dois Jogadores, IA em níveis, stats, replay e GUI web ainda não.
+Trabalho **individual**. Estado atual: Semana 3, **T6 concluído** (PvC e PvP jogáveis). IA em níveis, stats, replay e GUI web ainda não.
 
 ### Decisões de interpretação
 
@@ -42,9 +42,9 @@ Identificadores do Product Owner. O README precisa referenciá-los na entrega; a
 | RF04 | Posicionar automaticamente, sem sobreposição | `navios.py` → `gerar_frota()` | feito |
 | RF05 | Validar jogadas (limites e não repetidas) | `partida.aplicar_tiro` + `utils.py` | feito |
 | RF06 | Água, acerto, navio afundado | `partida.py` → `aplicar_tiro()` | feito |
-| RF07 | Fim: vencedor, jogadas, tempo | `utils.formatar_tempo` + tela de fim | cronômetro pronto; tela pendente |
+| RF07 | Fim: vencedor, jogadas, tempo | `partida.exibir_fim_de_jogo` | feito |
 | RF08 | Nova partida pelo menu | `menu.py` → `iniciar_nova_partida()` | feito |
-| RF09 | Jogador × Computador e Dois Jogadores | `partida.jogar_pvc`; PvP no T6 | PvC feito |
+| RF09 | Jogador × Computador e Dois Jogadores | `partida.jogar` (pvc/pvp) | feito |
 | RF10 | Conferência dos navios antes de começar | `navios.py` → `conferir_posicionamento()` | feito |
 | RF11 | Histórico de jogadas | `replay.py` | pendente |
 | RF12 | Estatísticas (partidas, acertos, aproveitamento) | `estatisticas.py` | pendente |
@@ -77,7 +77,7 @@ Próximos arquivos obrigatórios: `computador.py`, `estatisticas.py`, `replay.py
 
 ## Implementação
 
-Fluxo até o T4: menu → modo → conferência (o loop de tiros é o T5).
+Fluxo até o T6: menu → modo → conferência → loop de tiros → tela de fim.
 
 ```mermaid
 flowchart TD
@@ -92,8 +92,9 @@ flowchart TD
     modo --> pvc["Jogador vs Computador"]
     modo --> pvp["Dois Jogadores"]
     pvc --> conferencia["navios.conferir_posicionamento"]
-    pvp --> avisoPvp["aviso T6"]
-    conferencia --> loopPvc["partida.jogar_pvc"]
+    pvp --> conferenciaPvp["conferencia dos dois"]
+    conferencia --> loopPvc["partida.jogar"]
+    conferenciaPvp --> loopPvc
 ```
 
 **O que cada módulo faz, em detalhe:**
@@ -114,7 +115,7 @@ python tabuleiro.py    # mockup 6.3
 python navios.py       # 40 frotas sem overlap + conferência C/R
 ```
 
-Nova partida PvC: conferência C/R, depois tiros `C5`. Água / acerto / afundado. Computador responde no automático. Dois Jogadores ainda não (T6).
+Nova partida PvC ou PvP (hotseat). Tiros `C5`. Água / acerto / afundado. Tela de fim com vencedor, jogadas e tempo.
 
 ## Instalação e configuração
 

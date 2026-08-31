@@ -91,11 +91,16 @@ dificuldades e como foram superadas. Preencher no mesmo dia do código.
 
 ### T6. Dois Jogadores, conferência RF10 e fim RF07
 
-- **Data:**
-- **O que foi feito:**
-- **Dificuldades:**
-- **Como foram superadas:**
-- **Anotações:** *(ainda não iniciado)*
+- **Data:** 31/08/2026
+- **O que foi feito:** `montar_partida_pvp` com conferência de cada um e
+  “passe o computador”. Loop unificado `jogar()` (PvC e PvP). Tela de fim
+  no mockup 6.5: vencedor, total de jogadas, tempo HH:MM:SS, atalhos
+  replay (aviso T8) / nova partida / menu.
+- **Dificuldades:** No PvP o tabuleiro exibido tem de ser o do atacante da
+  vez, não sempre o jogador 1. Nova partida no fim não pode perder o menu.
+- **Como foram superadas:** `_exibir_tabuleiros(partida, visao)`. Fim devolve
+  `nova` ou `menu`; o menu chama `iniciar_nova_partida()` de novo se for nova.
+- **Anotações:** Replay [1] ainda é stub do T8.
 
 ### T7. IA fácil / médio / difícil
 

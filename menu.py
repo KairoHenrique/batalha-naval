@@ -1,11 +1,16 @@
 """Menu principal do Batalha Naval (RF01, RF08).
 
-Nova partida no modo PvC entra no loop de tiros (T5). Dois Jogadores: T6.
+Nova partida no modo PvC ou PvP (T5/T6).
 """
 
 from __future__ import annotations
 
-from partida import jogar_pvc, montar_partida_pvc
+from partida import (
+    exibir_fim_de_jogo,
+    jogar,
+    montar_partida_pvc,
+    montar_partida_pvp,
+)
 from utils import limpar_tela
 
 NIVEIS_IA = ("facil", "medio", "dificil")
@@ -46,11 +51,13 @@ def iniciar_nova_partida() -> None:
         dificuldade = escolhida
 
     nome_j1, nome_j2 = _perguntar_nomes(modo)
-    if modo == "pvp":
-        _avisar_pvp_ainda_nao_implementado(nome_j1, nome_j2)
-        return
-    partida = montar_partida_pvc(nome_j1, dificuldade)
-    jogar_pvc(partida)
+    if modo == "pvc":
+        partida = montar_partida_pvc(nome_j1, dificuldade)
+    else:
+        partida = montar_partida_pvp(nome_j1, nome_j2)
+    jogar(partida)
+    if exibir_fim_de_jogo(partida) == "nova":
+        iniciar_nova_partida()
 
 
 def exibir_creditos() -> None:
@@ -136,18 +143,6 @@ def _perguntar_nomes(modo: str) -> tuple[str, str]:
         return nome_j1, "Computador"
     nome_j2 = _ler_nome("Nome do Jogador 2", "Jogador 2")
     return nome_j1, nome_j2
-
-
-def _avisar_pvp_ainda_nao_implementado(nome_j1: str, nome_j2: str) -> None:
-    limpar_tela()
-    print("=" * LARGURA)
-    print("DOIS JOGADORES")
-    print("=" * LARGURA)
-    print()
-    print(f"{nome_j1} vs {nome_j2}")
-    print("O modo hotseat entra no T6.")
-    print("Por enquanto jogue Jogador vs Computador (opcao 1 do modo).")
-    _pausar()
 
 
 def _exibir_estatisticas_indisponiveis() -> None:

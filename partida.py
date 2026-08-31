@@ -84,10 +84,40 @@ def montar_partida_pvc(
     )
 
 
-def jogar_pvc(partida: Partida) -> None:
-    """Loop de tiros Jogador x Computador (RF05, RF06, RN02, RN05)."""
+def montar_partida_pvp(nome_j1: str, nome_j2: str) -> Partida:
+    """RF09/RF10: cada humano confere a própria frota (hotseat)."""
+    tab_j1, navios_j1 = conferir_posicionamento(nome_j1)
+    limpar_tela()
+    input(f"Passe o computador para {nome_j2}. ENTER...")
+    tab_j2, navios_j2 = conferir_posicionamento(nome_j2)
+    jogador_1 = criar_jogador(nome_j1, tab_j1, navios_j1)
+    jogador_2 = criar_jogador(nome_j2, tab_j2, navios_j2)
+    limpar_tela()
+    input("Frotas confirmadas. ENTER para o primeiro turno... ")
+    return Partida(
+        modo="pvp",
+        dificuldade="facil",
+        jogadores=[jogador_1, jogador_2],
+    )
+
+
+def jogar(partida: Partida) -> None:
+    """Loop de tiros PvC ou PvP até alguém afundar a frota inimiga."""
     while not partida.encerrada():
-        _exibir_tabuleiros_pvc(partida)
+        atacante = partida.atacante()
+        if atacante.eh_computador:
+            resultado_cpu = _turno_computador_aleatorio(partida)
+            print()
+            print(f"Computador jogou {resultado_cpu.coordenada}.")
+            print(resultado_cpu.mensagem)
+            if partida.encerrada():
+                return
+            input("ENTER para o seu turno... ")
+            continue
+
+        if partida.modo == "pvp":
+            _aguardar_troca_de_jogador(atacante.nome)
+        _exibir_tabuleiros(partida, atacante)
         coordenada = _pedir_coordenada_humana()
         if coordenada is None:
             continue
@@ -99,16 +129,41 @@ def jogar_pvc(partida: Partida) -> None:
             input("ENTER para tentar de novo... ")
             continue
         if partida.encerrada():
-            break
-        input("ENTER para o turno do computador... ")
-        resultado_cpu = _turno_computador_aleatorio(partida)
-        print()
-        print(f"Computador jogou {resultado_cpu.coordenada}.")
-        print(resultado_cpu.mensagem)
-        if partida.encerrada():
-            break
-        input("ENTER para o seu turno... ")
-    _exibir_resumo_simples(partida)
+            return
+        if partida.atacante().eh_computador:
+            input("ENTER para o turno do computador... ")
+
+
+def jogar_pvc(partida: Partida) -> None:
+    """Compatível com o T5: mesmo loop unificado."""
+    jogar(partida)
+
+
+def exibir_fim_de_jogo(partida: Partida) -> str:
+    """RF07 / mockup 6.5. Devolve 'nova' ou 'menu'."""
+    duracao = time.perf_counter() - partida.inicio
+    while True:
+        limpar_tela()
+        print("=" * LARGURA)
+        print("FIM DE JOGO")
+        print("=" * LARGURA)
+        print(f"Vencedor: {partida.vencedor}")
+        print(f"Total de jogadas: {partida.total_jogadas}")
+        print(f"Tempo de partida: {formatar_tempo(duracao)}")
+        print("-" * LARGURA)
+        print("[1] Ver replay  [2] Nova partida  [3] Menu principal")
+        escolha = input("Escolha uma opcao: ").strip()
+        if escolha == "1":
+            print()
+            print("Replay da ultima partida entra no T8.")
+            input("ENTER...")
+            continue
+        if escolha == "2":
+            return "nova"
+        if escolha == "3":
+            return "menu"
+        print("Opcao invalida. Tente novamente.")
+        input("ENTER...")
 
 
 def aplicar_tiro(partida: Partida, texto_coordenada: str) -> ResultadoJogada:
@@ -232,30 +287,31 @@ def _pedir_coordenada_humana() -> str | None:
     return bruto
 
 
-def _exibir_tabuleiros_pvc(partida: Partida) -> None:
-    humano = partida.jogadores[0]
+def _aguardar_troca_de_jogador(nome: str) -> None:
     limpar_tela()
     print("=" * LARGURA)
-    print(f"{humano.nome} vs Computador")
+    print(f"Vez de {nome}")
+    print("=" * LARGURA)
+    print()
+    print("Passe o computador para este jogador.")
+    print("Nao olhe o tabuleiro do oponente.")
+    input("ENTER para ver os tabuleiros... ")
+
+
+def _exibir_tabuleiros(partida: Partida, visao: Jogador) -> None:
+    oponente = partida.jogadores[0]
+    if oponente is visao:
+        oponente = partida.jogadores[1]
+    limpar_tela()
+    print("=" * LARGURA)
+    print(f"{visao.nome} vs {oponente.nome}")
     print("=" * LARGURA)
     print()
     print("Seu tabuleiro")
-    imprimir_tabuleiro(humano.tabuleiro)
+    imprimir_tabuleiro(visao.tabuleiro)
     print()
     print("Tabuleiro inimigo")
-    print(renderizar_tabuleiro(humano.tabuleiro_tiros))
+    print(renderizar_tabuleiro(visao.tabuleiro_tiros))
     print()
     print("Legenda: ~ agua nao jogada | N navio | X acerto | O agua jogada")
     print()
-
-
-def _exibir_resumo_simples(partida: Partida) -> None:
-    duracao = time.perf_counter() - partida.inicio
-    print()
-    print("=" * LARGURA)
-    print("FIM DE JOGO")
-    print("=" * LARGURA)
-    print(f"Vencedor: {partida.vencedor}")
-    print(f"Total de jogadas: {partida.total_jogadas}")
-    print(f"Tempo de partida: {formatar_tempo(duracao)}")
-    input("\n[ENTER] Voltar ao menu")
