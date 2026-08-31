@@ -1,0 +1,191 @@
+"""Menu principal do Batalha Naval (RF01, RF08).
+
+Nova partida no modo PvC entra no loop de tiros (T5). Dois Jogadores: T6.
+"""
+
+from __future__ import annotations
+
+from partida import jogar_pvc, montar_partida_pvc
+from utils import limpar_tela
+
+NIVEIS_IA = ("facil", "medio", "dificil")
+LARGURA = 50
+
+
+def iniciar_menu() -> None:
+    """RF01: laço do menu até o usuário sair. RF08: nova partida sempre disponível."""
+    while True:
+        _exibir_menu_principal()
+        opcao = _ler_opcao({"1", "2", "3", "4", "5", "6"})
+        if opcao == "1":
+            iniciar_nova_partida()
+        elif opcao == "2":
+            _exibir_estatisticas_indisponiveis()
+        elif opcao == "3":
+            _exibir_replay_indisponivel()
+        elif opcao == "4":
+            exibir_creditos()
+        elif opcao == "5":
+            print("Ate logo.")
+            return
+        elif opcao == "6":
+            exibir_instrucoes_gui()
+
+
+def iniciar_nova_partida() -> None:
+    """RF08: começa uma partida a partir do menu (modo + conferência RF10)."""
+    modo = _selecionar_modo()
+    if modo is None:
+        return
+
+    dificuldade = "medio"
+    if modo == "pvc":
+        escolhida = _selecionar_dificuldade()
+        if escolhida is None:
+            return
+        dificuldade = escolhida
+
+    nome_j1, nome_j2 = _perguntar_nomes(modo)
+    if modo == "pvp":
+        _avisar_pvp_ainda_nao_implementado(nome_j1, nome_j2)
+        return
+    partida = montar_partida_pvc(nome_j1, dificuldade)
+    jogar_pvc(partida)
+
+
+def exibir_creditos() -> None:
+    """Tela de créditos do mockup (opção 4)."""
+    limpar_tela()
+    _imprimir_faixa("CREDITOS")
+    print("GPTech Games — linha de tabuleiros classicos em modo texto")
+    print("Projeto: Batalha Naval")
+    print()
+    print("Desenvolvedor: Kairo Henrique Ferreira Martins")
+    print("Disciplina: Programacao em Python — CEFET-MG Divinopolis")
+    print("Product Owner / professor: Guido Pantuza")
+    print("Repositorio: https://github.com/KairoHenrique/batalha-naval")
+    print()
+    print("Trabalho individual. Entrega: 29/09/2026 (SIGAA).")
+    _pausar()
+
+
+def exibir_instrucoes_gui() -> None:
+    """Opção 6 / `python main.py --gui`: como subir a interface web (T9/T10)."""
+    limpar_tela()
+    _imprimir_faixa("INTERFACE WEB (BONUS)")
+    print("A GUI nao usa Tkinter. Quando T9/T10 existirem:")
+    print()
+    print("  1. python -m uvicorn api:app --port 8000")
+    print("  2. cd web")
+    print("  3. npm install")
+    print("  4. npm run dev")
+    print("  5. Abra http://localhost:3000")
+    print()
+    print("Hoje a API e o Next.js ainda nao foram implementados.")
+    print("O modo texto (este menu) continua sendo o aceite dos 100 pts.")
+    _pausar()
+
+
+def _exibir_menu_principal() -> None:
+    limpar_tela()
+    print("=" * LARGURA)
+    print("BATALHA NAVAL - GPTECH GAMES")
+    print("=" * LARGURA)
+    print("1. Nova partida")
+    print("2. Ver estatisticas")
+    print("3. Assistir replay da ultima partida")
+    print("4. Creditos")
+    print("5. Sair")
+    print("6. Interface web (bonus)")
+    print("-" * LARGURA)
+
+
+def _selecionar_modo() -> str | None:
+    """Mockup 6.2. None = voltar ao menu."""
+    limpar_tela()
+    print("Selecione o modo de jogo:")
+    print("[1] Jogador vs Computador")
+    print("[2] Dois Jogadores")
+    print("[0] Voltar ao menu")
+    print()
+    opcao = _ler_opcao({"0", "1", "2"}, prompt=">> ")
+    if opcao == "0":
+        return None
+    return "pvc" if opcao == "1" else "pvp"
+
+
+def _selecionar_dificuldade() -> str | None:
+    """Níveis da IA (T7); a escolha já fica gravada na sessão."""
+    limpar_tela()
+    print("Selecione a dificuldade da IA:")
+    print("[1] Facil   — tiros aleatorios")
+    print("[2] Medio   — hunt-and-target")
+    print("[3] Dificil — hunt-and-target + parity")
+    print("[0] Voltar ao menu")
+    print()
+    opcao = _ler_opcao({"0", "1", "2", "3"}, prompt=">> ")
+    if opcao == "0":
+        return None
+    return NIVEIS_IA[int(opcao) - 1]
+
+
+def _perguntar_nomes(modo: str) -> tuple[str, str]:
+    print()
+    nome_j1 = _ler_nome("Nome do Jogador 1", "Jogador 1")
+    if modo == "pvc":
+        return nome_j1, "Computador"
+    nome_j2 = _ler_nome("Nome do Jogador 2", "Jogador 2")
+    return nome_j1, nome_j2
+
+
+def _avisar_pvp_ainda_nao_implementado(nome_j1: str, nome_j2: str) -> None:
+    limpar_tela()
+    print("=" * LARGURA)
+    print("DOIS JOGADORES")
+    print("=" * LARGURA)
+    print()
+    print(f"{nome_j1} vs {nome_j2}")
+    print("O modo hotseat entra no T6.")
+    print("Por enquanto jogue Jogador vs Computador (opcao 1 do modo).")
+    _pausar()
+
+
+def _exibir_estatisticas_indisponiveis() -> None:
+    limpar_tela()
+    _imprimir_faixa("ESTATISTICAS")
+    print("Ainda nao ha partidas registradas (modulo estatisticas.py: T8).")
+    _pausar()
+
+
+def _exibir_replay_indisponivel() -> None:
+    limpar_tela()
+    _imprimir_faixa("REPLAY")
+    print("Nenhuma partida gravada (modulo replay.py: T8).")
+    _pausar()
+
+
+def _imprimir_faixa(titulo: str) -> None:
+    print("=" * LARGURA)
+    print(titulo)
+    print("=" * LARGURA)
+    print()
+
+
+def _ler_opcao(permitidas: set[str], prompt: str = "Escolha uma opcao: ") -> str:
+    """RNF05: rejeita vazio e valores fora da lista, sem quebrar o menu."""
+    while True:
+        bruto = input(prompt).strip()
+        if bruto in permitidas:
+            return bruto
+        print("Opcao invalida. Tente novamente.")
+
+
+def _ler_nome(rotulo: str, padrao: str) -> str:
+    bruto = input(f"{rotulo} [{padrao}]: ").strip()
+    if not bruto:
+        return padrao
+    return bruto[:40]
+
+
+def _pausar() -> None:
+    input("\n[ENTER] Voltar ao menu")

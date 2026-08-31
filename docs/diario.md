@@ -55,11 +55,19 @@ dificuldades e como foram superadas. Preencher no mesmo dia do código.
 
 ### T4. `main.py` + `menu.py`
 
-- **Data:**
-- **O que foi feito:**
-- **Dificuldades:**
-- **Como foram superadas:**
-- **Anotações:** *(ainda não iniciado)*
+- **Data:** 28/08/2026
+- **O que foi feito:** `main.py` (`python main.py` e `--gui`) e `menu.py` no
+  layout do mockup 6.1 (opção extra 6 = interface web). Nova partida (RF08)
+  escolhe modo 6.2, dificuldade no PvC, nomes e chama
+  `conferir_posicionamento`. Créditos com autor/professor. Stats e replay
+  avisam que entram no T8. O loop de tiros ainda não existe (T5).
+- **Dificuldades:** O enunciado mostra só 5 itens no menu; o plano pede GUI
+  web. Sem T5, “Nova partida” não pode atirar.
+- **Como foram superadas:** Opção 6 documentada como bônus, sem quebrar o
+  mockup. Depois da conferência o menu explica o T5 e volta — RF08 continua
+  válido (sempre dá para começar de novo pela opção 1). Entradas fora da
+  lista são recusadas no próprio `_ler_opcao`.
+- **Anotações:** `python main.py` na pasta do projeto. Ctrl+C sai limpo.
 
 ---
 
@@ -67,11 +75,19 @@ dificuldades e como foram superadas. Preencher no mesmo dia do código.
 
 ### T5. Jogador x Computador + RF05/RF06
 
-- **Data:**
-- **O que foi feito:**
-- **Dificuldades:**
-- **Como foram superadas:**
-- **Anotações:** *(ainda não iniciado)*
+- **Data:** 31/08/2026
+- **O que foi feito:** `jogador.py` e `partida.py`. Loop PvC com dois tabuleiros
+  (próprio com N, inimigo só com tiros). `aplicar_tiro()` valida C5, rejeita
+  repetida sem passar a vez (RN02) e imprime água / acerto / afundado (RF06).
+  Computador atira ao acaso em casa livre (RN05, versão simples). Fim mostra
+  vencedor, jogadas e tempo. PvP ainda avisa T6.
+- **Dificuldades:** Depois de um tiro válido o turno já troca; testar RN02
+  exige forçar o mesmo atacante. Mensagem de afundado precisa do tipo do navio.
+- **Como foram superadas:** `Navio.acertos` + `esta_afundado()`. Teste
+  automático de acerto, repetida e `K5`/`A0`. CPU só escolhe em
+  `_casas_livres`.
+- **Anotações:** Dificuldade do menu ainda não muda a IA (T7). `python main.py`
+  → 1 → Jogador vs Computador.
 
 ### T6. Dois Jogadores, conferência RF10 e fim RF07
 
