@@ -18,7 +18,7 @@ Entrega: **29/09/2026**, pelo SIGAA, com o link deste repositório. Apresentaç�
 
 O núcleo do jogo é Python 3.10+ (aqui, 3.12), sem dependências externas no modo texto. A lógica de cada RF fica no módulo correspondente — exigência do enunciado quando pede *função*.
 
-Trabalho **individual**. Estado atual: Semana 3, **T6 concluído** (PvC e PvP jogáveis). IA em níveis, stats, replay e GUI web ainda não.
+Trabalho **individual**. Estado atual: Semana 3, **T7 concluído** (PvC, PvP e IA em 3 níveis). Stats, replay e GUI web entram na Semana 4.
 
 ### Decisões de interpretação
 
@@ -50,7 +50,7 @@ Identificadores do Product Owner. O README precisa referenciá-los na entrega; a
 | RF12 | Estatísticas (partidas, acertos, aproveitamento) | `estatisticas.py` | pendente |
 | RF13 | Replay da última partida | `replay.py` | pendente |
 
-Regras de negócio cobertas: **RN01**, **RN02**, **RN03**, **RN04** (PvC) e **RN05** em tiro aleatório.
+Regras de negócio cobertas: **RN01–RN05**. IA extra: fácil / médio / difícil.
 
 ## Estrutura geral do projeto
 
@@ -62,8 +62,9 @@ batalha-naval/
 ├── .gitignore
 ├── main.py               # python main.py / python main.py --gui
 ├── menu.py               # RF01 / RF08 — mockups 6.1 e 6.2, créditos, GUI
-├── partida.py            # T5 — loop PvC, aplicar_tiro (RF05/RF06)
+├── partida.py            # loop PvC/PvP, aplicar_tiro, tela de fim
 ├── jogador.py            # lado humano ou CPU (frota, tiros)
+├── computador.py         # T7 — IA facil / medio / dificil
 ├── utils.py              # RF05 / RN01 / RN02 — parse C5, tempo HH:MM:SS
 ├── tabuleiro.py          # RF02 — matriz 10x10 e impressão do mockup 6.3
 ├── navios.py             # RF03 / RF04 / RF10 — frota, auto-place, conferência
@@ -73,7 +74,7 @@ batalha-naval/
 └── PYTHON_…BatalhaNaval.pdf   # enunciado local (não versionado)
 ```
 
-Próximos arquivos obrigatórios: `computador.py`, `estatisticas.py`, `replay.py`. Extras planejados: `api.py`, `web/` (Next.js).
+Próximos arquivos obrigatórios: `estatisticas.py`, `replay.py`. Extras planejados: `api.py`, `web/` (Next.js).
 
 ## Implementação
 
@@ -104,7 +105,8 @@ flowchart TD
 3. **`navios.py`** — dataclass `Navio` (tipo, tamanho, posições, acertos). Segmento sorteado **já cabe** no tabuleiro (`TAMANHO - comprimento`), horizontal ou vertical. Grandes entram primeiro. Se um navio não encaixa, a frota inteira é gerada de novo. `conferir_posicionamento(nome)` é a função do RF10: a lógica de C/R está nela.
 4. **`menu.py`** — `iniciar_menu()` é o RF01. Nova partida PvC chama `montar_partida_pvc` + `jogar_pvc`. PvP ainda avisa T6. Stats/replay avisam T8.
 5. **`main.py`** — `python main.py` abre o menu; `python main.py --gui` vai às instruções da GUI.
-6. **`jogador.py` / `partida.py`** — um lado da guerra e o loop PvC. `aplicar_tiro` é RF05/RF06: água, acerto, afundado (com tipo), repetida sem consumir rodada. CPU aleatório em casa livre.
+6. **`jogador.py` / `partida.py`** — um lado da guerra e o loop PvC/PvP. `aplicar_tiro` é RF05/RF06. Fim de jogo é RF07.
+7. **`computador.py`** — `escolher_jogada` / `registrar_resultado_ia`. Fácil aleatório; médio hunt-target; difícil hunt-target + parity.
 
 ## Demonstração
 

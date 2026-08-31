@@ -104,11 +104,19 @@ dificuldades e como foram superadas. Preencher no mesmo dia do código.
 
 ### T7. IA fácil / médio / difícil
 
-- **Data:**
-- **O que foi feito:**
-- **Dificuldades:**
-- **Como foram superadas:**
-- **Anotações:** *(ainda não iniciado)*
+- **Data:** 31/08/2026
+- **O que foi feito:** `computador.py` com três níveis. Fácil: aleatório.
+  Médio: hunt-and-target (fila de vizinhos após acerto; se dois acertos
+  alinharem, estende o eixo). Difícil: o mesmo + parity (caça só em
+  (linha+coluna) par). Afundado limpa a fila. `partida._turno_computador`
+  usa a dificuldade escolhida no menu.
+- **Dificuldades:** Manter a fila só com casas ainda livres; não caçar
+  depois de afundar (vizinhos de um navio morto são água).
+- **Como foram superadas:** `escolher_jogada` descarta alvos que já saíram
+  de `livres`. `registrar_resultado_ia(..., "afundado")` zera fila e
+  acertos abertos. Teste: acerto → vizinho; afundado → fila vazia; difícil
+  começa em casa de paridade par.
+- **Anotações:** Menu opção 1 → PvC → 1/2/3. Sem dependências extras.
 
 ---
 

@@ -1,18 +1,23 @@
-"""Sessão de partida: tiros, mensagens e loop Jogador x Computador (T5)."""
+"""Sessão de partida: tiros, mensagens e loop PvC / PvP."""
 
 from __future__ import annotations
 
-import random
 import time
 from dataclasses import dataclass, field
 
+from computador import (
+    EstadoIA,
+    casas_disponiveis,
+    criar_estado_ia,
+    escolher_jogada,
+    registrar_resultado_ia,
+)
 from jogador import Jogador, criar_jogador
 from navios import conferir_posicionamento, encontrar_navio, gerar_frota
 from tabuleiro import imprimir_tabuleiro, marcar_celula, renderizar_tabuleiro
 from utils import (
     SIMBOLO_ACERTO,
     SIMBOLO_AGUA_JOGADA,
-    TAMANHO_TABULEIRO,
     Posicao,
     formatar_coordenada,
     formatar_tempo,
@@ -49,6 +54,7 @@ class Partida:
     inicio: float = field(default_factory=time.perf_counter)
     vencedor: str | None = None
     total_jogadas: int = 0
+    estado_ia: EstadoIA | None = None
 
     def encerrada(self) -> bool:
         return self.vencedor is not None
@@ -81,6 +87,7 @@ def montar_partida_pvc(
         modo="pvc",
         dificuldade=dificuldade,
         jogadores=[humano, computador],
+        estado_ia=criar_estado_ia(dificuldade),
     )
 
 
@@ -106,7 +113,7 @@ def jogar(partida: Partida) -> None:
     while not partida.encerrada():
         atacante = partida.atacante()
         if atacante.eh_computador:
-            resultado_cpu = _turno_computador_aleatorio(partida)
+            resultado_cpu = _turno_computador(partida)
             print()
             print(f"Computador jogou {resultado_cpu.coordenada}.")
             print(resultado_cpu.mensagem)
@@ -263,20 +270,15 @@ def _marcar_tiro(
     marcar_celula(defensor.tabuleiro, linha, coluna, simbolo)
 
 
-def _turno_computador_aleatorio(partida: Partida) -> ResultadoJogada:
-    """RN05 (T5): o computador escolhe uma casa ainda livre, ao acaso."""
-    livres = _casas_livres(partida.atacante().tiros_feitos)
-    linha, coluna = random.choice(livres)
-    return aplicar_tiro(partida, formatar_coordenada(linha, coluna))
-
-
-def _casas_livres(tiros: set[Posicao]) -> list[Posicao]:
-    return [
-        (linha, coluna)
-        for linha in range(TAMANHO_TABULEIRO)
-        for coluna in range(TAMANHO_TABULEIRO)
-        if (linha, coluna) not in tiros
-    ]
+def _turno_computador(partida: Partida) -> ResultadoJogada:
+    """RN05: dispara uma casa válida usando o nível de IA da partida."""
+    atacante = partida.atacante()
+    livres = casas_disponiveis(atacante.tiros_feitos)
+    estado = partida.estado_ia or criar_estado_ia("facil")
+    linha, coluna = escolher_jogada(livres, estado)
+    resultado = aplicar_tiro(partida, formatar_coordenada(linha, coluna))
+    registrar_resultado_ia(estado, (linha, coluna), resultado.resultado)
+    return resultado
 
 
 def _pedir_coordenada_humana() -> str | None:
