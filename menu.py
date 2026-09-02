@@ -5,12 +5,14 @@ Nova partida no modo PvC ou PvP (T5/T6).
 
 from __future__ import annotations
 
+from estatisticas import exibir_estatisticas
 from partida import (
     exibir_fim_de_jogo,
     jogar,
     montar_partida_pvc,
     montar_partida_pvp,
 )
+from replay import reproduzir_ultima_partida
 from utils import limpar_tela
 
 NIVEIS_IA = ("facil", "medio", "dificil")
@@ -21,20 +23,18 @@ def iniciar_menu() -> None:
     """RF01: laço do menu até o usuário sair. RF08: nova partida sempre disponível."""
     while True:
         _exibir_menu_principal()
-        opcao = _ler_opcao({"1", "2", "3", "4", "5", "6"})
+        opcao = _ler_opcao({"1", "2", "3", "4", "5"})
         if opcao == "1":
             iniciar_nova_partida()
         elif opcao == "2":
-            _exibir_estatisticas_indisponiveis()
+            exibir_estatisticas()
         elif opcao == "3":
-            _exibir_replay_indisponivel()
+            reproduzir_ultima_partida()
         elif opcao == "4":
             exibir_creditos()
         elif opcao == "5":
             print("Ate logo.")
             return
-        elif opcao == "6":
-            exibir_instrucoes_gui()
 
 
 def iniciar_nova_partida() -> None:
@@ -76,23 +76,6 @@ def exibir_creditos() -> None:
     _pausar()
 
 
-def exibir_instrucoes_gui() -> None:
-    """Opção 6 / `python main.py --gui`: como subir a interface web (T9/T10)."""
-    limpar_tela()
-    _imprimir_faixa("INTERFACE WEB (BONUS)")
-    print("A GUI nao usa Tkinter. Quando T9/T10 existirem:")
-    print()
-    print("  1. python -m uvicorn api:app --port 8000")
-    print("  2. cd web")
-    print("  3. npm install")
-    print("  4. npm run dev")
-    print("  5. Abra http://localhost:3000")
-    print()
-    print("Hoje a API e o Next.js ainda nao foram implementados.")
-    print("O modo texto (este menu) continua sendo o aceite dos 100 pts.")
-    _pausar()
-
-
 def _exibir_menu_principal() -> None:
     limpar_tela()
     print("=" * LARGURA)
@@ -103,7 +86,6 @@ def _exibir_menu_principal() -> None:
     print("3. Assistir replay da ultima partida")
     print("4. Creditos")
     print("5. Sair")
-    print("6. Interface web (bonus)")
     print("-" * LARGURA)
 
 
@@ -125,9 +107,9 @@ def _selecionar_dificuldade() -> str | None:
     """Níveis da IA (T7); a escolha já fica gravada na sessão."""
     limpar_tela()
     print("Selecione a dificuldade da IA:")
-    print("[1] Facil   — tiros aleatorios")
-    print("[2] Medio   — hunt-and-target")
-    print("[3] Dificil — hunt-and-target + parity")
+    print("[1] Facil")
+    print("[2] Medio")
+    print("[3] Dificil")
     print("[0] Voltar ao menu")
     print()
     opcao = _ler_opcao({"0", "1", "2", "3"}, prompt=">> ")
@@ -143,20 +125,6 @@ def _perguntar_nomes(modo: str) -> tuple[str, str]:
         return nome_j1, "Computador"
     nome_j2 = _ler_nome("Nome do Jogador 2", "Jogador 2")
     return nome_j1, nome_j2
-
-
-def _exibir_estatisticas_indisponiveis() -> None:
-    limpar_tela()
-    _imprimir_faixa("ESTATISTICAS")
-    print("Ainda nao ha partidas registradas (modulo estatisticas.py: T8).")
-    _pausar()
-
-
-def _exibir_replay_indisponivel() -> None:
-    limpar_tela()
-    _imprimir_faixa("REPLAY")
-    print("Nenhuma partida gravada (modulo replay.py: T8).")
-    _pausar()
 
 
 def _imprimir_faixa(titulo: str) -> None:

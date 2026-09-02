@@ -124,11 +124,18 @@ dificuldades e como foram superadas. Preencher no mesmo dia do código.
 
 ### T8. `estatisticas.py` + `replay.py`
 
-- **Data:**
-- **O que foi feito:**
-- **Dificuldades:**
-- **Como foram superadas:**
-- **Anotações:** *(ainda não iniciado)*
+- **Data:** 01/09/2026
+- **O que foi feito:** Persistência em `data/estatisticas.json` e
+  `data/ultima_partida.json`. Menu 2 mostra partidas, vitórias, tiros,
+  acertos e aproveitamento (só apelido humano; CPU não entra). Menu 3 e
+  opção [1] do fim reproduzem o histórico (Enter / Q), mockup 6.6.
+  `persistir_partida_encerrada` grava uma vez só.
+- **Dificuldades:** Reabrir o replay no fim não pode somar de novo nas
+  stats. JSON corrompido não pode derrubar o menu.
+- **Como foram superadas:** Flag `partida.persistida`. Leitura trata
+  arquivo ausente/inválido como vazio. Escrita via `.tmp` + `replace`.
+- **Anotações:** JSON em `data/` está no `.gitignore`. Teste: vitória da
+  Ana, CPU fora das stats, linha `Jogada 01/14`.
 
 ### T9. `partida.py` + `api.py` (localhost:8000)
 
@@ -152,8 +159,20 @@ dificuldades e como foram superadas. Preencher no mesmo dia do código.
 
 ### T11. README, diário completo e checklist de aceite
 
-- **Data:**
-- **O que foi feito:**
-- **Dificuldades:**
-- **Como foram superadas:**
-- **Anotações:** *(ainda não iniciado)*
+- **Data:** (em aberto)
+- **O que foi feito:** —
+- **Dificuldades:** —
+- **Como foram superadas:** —
+- **Anotações — decisão em aberto (perguntar ao professor):**
+
+  O enunciado recomenda Tkinter ou Pygame como GUI extra e o mockup 6.1
+  é só o menu texto (5 opções). A interface web **não entra no menu** de
+  `python main.py`: o terminal fica 1–5; se houver GUI, o jogo inteiro
+  (menu, partida, stats, replay) roda **só** nela, como app separado.
+
+  Confirmar com o professor:
+  1. Vale o bônus de interface gráfica se for localhost (FastAPI + Next.js)
+     em vez de Tkinter/Pygame?
+  2. Pode ficar fora do menu texto, como entrada única pela web?
+
+  Sem esse aceite, T9/T10 não começam. O modo texto já cobre RF01–RF13.

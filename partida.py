@@ -55,6 +55,8 @@ class Partida:
     vencedor: str | None = None
     total_jogadas: int = 0
     estado_ia: EstadoIA | None = None
+    duracao_segundos: float = 0.0
+    persistida: bool = False
 
     def encerrada(self) -> bool:
         return self.vencedor is not None
@@ -146,9 +148,34 @@ def jogar_pvc(partida: Partida) -> None:
     jogar(partida)
 
 
+def persistir_partida_encerrada(partida: Partida) -> None:
+    """RF11/RF12: grava replay e soma estatísticas uma vez por partida."""
+    if partida.persistida or partida.vencedor is None:
+        return
+    from estatisticas import registrar_desempenho
+    from replay import montar_registro_partida, salvar_ultima_partida
+
+    if partida.duracao_segundos <= 0:
+        partida.duracao_segundos = time.perf_counter() - partida.inicio
+    salvar_ultima_partida(montar_registro_partida(partida))
+    for lado in partida.jogadores:
+        if lado.eh_computador:
+            continue
+        registrar_desempenho(
+            lado.nome,
+            lado.acertos,
+            len(lado.tiros_feitos),
+            lado.nome == partida.vencedor,
+        )
+    partida.persistida = True
+
+
 def exibir_fim_de_jogo(partida: Partida) -> str:
     """RF07 / mockup 6.5. Devolve 'nova' ou 'menu'."""
-    duracao = time.perf_counter() - partida.inicio
+    from replay import reproduzir_ultima_partida
+
+    persistir_partida_encerrada(partida)
+    duracao = partida.duracao_segundos
     while True:
         limpar_tela()
         print("=" * LARGURA)
@@ -161,9 +188,7 @@ def exibir_fim_de_jogo(partida: Partida) -> str:
         print("[1] Ver replay  [2] Nova partida  [3] Menu principal")
         escolha = input("Escolha uma opcao: ").strip()
         if escolha == "1":
-            print()
-            print("Replay da ultima partida entra no T8.")
-            input("ENTER...")
+            reproduzir_ultima_partida()
             continue
         if escolha == "2":
             return "nova"
@@ -235,6 +260,7 @@ def _resolver_disparo(
         acabou = True
         vencedor = atacante.nome
         partida.vencedor = vencedor
+        partida.duracao_segundos = time.perf_counter() - partida.inicio
 
     registro = {
         "numero": partida.total_jogadas,

@@ -7,6 +7,7 @@ humana passa por este módulo.
 from __future__ import annotations
 
 import os
+from pathlib import Path
 from typing import Iterable
 
 TAMANHO_TABULEIRO = 10
@@ -18,6 +19,8 @@ SIMBOLO_AGUA = "~"
 SIMBOLO_NAVIO = "N"
 SIMBOLO_ACERTO = "X"
 SIMBOLO_AGUA_JOGADA = "O"
+
+DIRETORIO_DADOS = Path(__file__).resolve().parent / "data"
 
 Posicao = tuple[int, int]
 
