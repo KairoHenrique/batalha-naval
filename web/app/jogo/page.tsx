@@ -121,6 +121,8 @@ function PainelBatalha({
   podeAtirar: boolean;
   onTiro: (coordenada: string) => void;
 }) {
+  const visao = estado.vez ?? estado.nome_j1;
+  const inimigo = visao === estado.nome_j1 ? estado.nome_j2 : estado.nome_j1;
   return (
     <div className="tabuleiros">
       {estado.tabuleiro_tiros ? (
@@ -129,6 +131,7 @@ function PainelBatalha({
           <Tabuleiro
             grade={estado.tabuleiro_tiros}
             clicavel={podeAtirar}
+            destaques={destaqueDaUltima(estado, visao)}
             onClique={onTiro}
           />
           <LegendaTabuleiro />
@@ -137,9 +140,25 @@ function PainelBatalha({
       {estado.tabuleiro_proprio ? (
         <section className="painel">
           <h2>Seu tabuleiro</h2>
-          <Tabuleiro grade={estado.tabuleiro_proprio} />
+          <Tabuleiro
+            grade={estado.tabuleiro_proprio}
+            destaques={destaqueDaUltima(estado, inimigo)}
+          />
         </section>
       ) : null}
     </div>
   );
+}
+
+function destaqueDaUltima(
+  estado: EstadoPartida,
+  jogador: string,
+): Record<string, "ultima"> {
+  const ultima = [...estado.jogadas_turno]
+    .reverse()
+    .find((jogada) => jogada.valida && jogada.jogador === jogador);
+  if (!ultima?.coordenada) {
+    return {};
+  }
+  return { [ultima.coordenada]: "ultima" };
 }

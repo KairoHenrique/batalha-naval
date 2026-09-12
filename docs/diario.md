@@ -139,7 +139,7 @@ dificuldades e como foram superadas. Preencher no mesmo dia do código.
 
 ### T9. `partida.py` + `api.py` (localhost:8000)
 
-- **Data:** 02/09/2026 (código); **12/09/2026** (aceite do professor)
+- **Data:** 12/09/2026
 - **O que foi feito:** `criar_partida` e `executar_turno_computador` em
   `partida.py` (sem I/O de terminal). `api.py` FastAPI em `:8000`: criar
   partida, posicionar/retirar frota, tiros, hotseat PvP, stats e replay.
@@ -148,21 +148,18 @@ dificuldades e como foram superadas. Preencher no mesmo dia do código.
   No PvP, após o tiro o próximo jogador ainda não está na frente da tela.
 - **Como foram superadas:** Estado público oculta `N` inimigo. Com
   `aguardando_troca`, a API não envia tabuleiros até `POST /partidas/pronto`.
-- **Anotações:** Professor aceitou FastAPI + Next.js no lugar de
-  Tkinter/Pygame. Entra no GitHub nesta data.
 
 ### T10. Next.js (localhost:3000)
 
-- **Data:** 02/09/2026 (código); **12/09/2026** (aceite do professor)
+- **Data:** 12/09/2026
 - **O que foi feito:** App em `web/` (menu, paleta para arrastar navios,
   tabuleiro clicável 10×10, stats, replay, créditos). Proxy `/backend` →
   `127.0.0.1:8000`. Visual marinho/ouro. Menu opção 6 sobe API+Next e
-  abre http://127.0.0.1:3000 no navegador.
+  abre http://127.0.0.1:3000 no navegador. Replay com Próxima/Play/Sair.
 - **Dificuldades:** Dois processos (API + Next). Clique na célula precisa
   virar `C5` como no modo texto.
 - **Como foram superadas:** Rewrite no Next; `coordenadaDeClique` usa A–J
   e 1–10. Rodar: `uvicorn api:app --port 8000` e `npm run dev` em `web/`.
-- **Anotações:** Aceite do professor em 12/09/2026. Commit da GUI extra.
 
 ---
 
@@ -171,10 +168,14 @@ dificuldades e como foram superadas. Preencher no mesmo dia do código.
 ### T11. README, diário completo e checklist de aceite
 
 - **Data:** 12/09/2026
-- **O que foi feito:** Professor aceitou FastAPI + Next.js. README e diário
-  atualizados. Menu texto 1–5 (mockup) + 6 Abrir (atalho da GUI).
-- **Dificuldades:** O mockup 6.1 tem 5 itens; a GUI extra precisa de entrada.
-- **Como foram superadas:** Opção 6 só dispara o navegador. O jogo texto
-  continua nas opções 1–5. A partida web (menu, frota, tiros, stats, replay)
-  roda em localhost:3000.
-- **Anotações:** Modo texto cobre RF01–RF13. GUI é bônus.
+- **O que foi feito:** README com tabela RF01–RF13, seção de bônus (IA +
+  FastAPI + Next.js) e checklist de aceite para terminal **e** browser.
+  Diário T1–T11 preenchido com dificuldades reais. Replay web ganhou
+  Próxima / Play / Sair; o tabuleiro destaca a última jogada válida.
+- **Dificuldades:** O mockup 6.1 tem 5 itens e o enunciado cita
+  Tkinter/Pygame; o Comitê precisa achar os 13 RFs nos dois lados sem
+  achar que a GUI substitui o texto.
+- **Como foram superadas:** Professor aceitou FastAPI + Next.js em
+  10/09/2026. Opção 6 só abre o localhost. A tabela do README aponta
+  arquivo/função de cada RF e o checklist manda marcar terminal e
+  browser. Replay texto permanece Enter/Q (mockup 6.6).

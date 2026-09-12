@@ -1,6 +1,6 @@
 import { coordenadaDeClique, type Celula } from "@/lib/api";
 
-export type Destaque = "preview" | "preview-erro";
+export type Destaque = "preview" | "preview-erro" | "ultima";
 
 export function parseCoordenada(
   texto: string,

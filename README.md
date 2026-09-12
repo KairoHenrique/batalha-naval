@@ -1,6 +1,6 @@
 # Batalha Naval — GPTech Games
 
-[![status](https://img.shields.io/badge/status-em%20andamento-yellow)](https://github.com/KairoHenrique/batalha-naval)
+[![status](https://img.shields.io/badge/status-T11%20aceite-success)](https://github.com/KairoHenrique/batalha-naval)
 [![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![Python](https://img.shields.io/badge/disciplina-Programação%20em%20Python-0B3D91)](https://github.com/KairoHenrique/batalha-naval)
 [![modalidade](https://img.shields.io/badge/modalidade-individual-important)](https://github.com/KairoHenrique)
@@ -18,7 +18,7 @@ Entrega: **29/09/2026**, pelo SIGAA, com o link deste repositório. Apresentaç�
 
 O núcleo do jogo é Python 3.10+ (aqui, 3.12), sem dependências externas no modo texto. A lógica de cada RF fica no módulo correspondente — exigência do enunciado quando pede *função*.
 
-Trabalho **individual**. Estado atual: Semana 4–5, **T8–T10 concluídos**. GUI web extra aceita pelo professor (FastAPI + Next.js). Falta só o fechamento fino do README (T11) se o Comitê pedir ajuste.
+Trabalho **individual**. Semanas 1–5 concluídas (T1–T11). GUI web extra aceita pelo professor (FastAPI + Next.js). O modo texto (`python main.py`) é o aceite dos 100 pts.
 
 ### Decisões de interpretação
 
@@ -50,7 +50,7 @@ Identificadores do Product Owner. O README precisa referenciá-los na entrega; a
 | RF12 | Estatísticas (partidas, acertos, aproveitamento) | `estatisticas.py` | feito |
 | RF13 | Replay da última partida | `replay.reproduzir_ultima_partida` | feito |
 
-Regras de negócio cobertas: **RN01–RN05**. IA extra: fácil / médio / difícil.
+Regras de negócio cobertas: **RN01–RN05**. IA extra: fácil / médio / difícil. Checklist de aceite (terminal + browser) no fim deste README.
 
 ## Estrutura geral do projeto
 
@@ -124,7 +124,19 @@ python tabuleiro.py    # mockup 6.3
 python navios.py       # 40 frotas sem overlap + conferência C/R
 ```
 
-Nova partida PvC ou PvP. Tiros `C5`. Fim com vencedor, jogadas e tempo. Menu 2 = stats; menu 3 = replay da última partida.
+Nova partida PvC ou PvP. Tiros `C5`. Fim com vencedor, jogadas e tempo. Menu 2 = stats; menu 3 = replay da última partida. Menu 6 = GUI.
+
+## Bônus (IA + GUI localhost)
+
+| Extra | Onde | O que o Comitê vê |
+|-------|------|-------------------|
+| IA fácil / médio / difícil | `computador.py` | PvC no texto e na web usam a mesma função |
+| API FastAPI `:8000` | `api.py` | Mesmas regras do texto; não vaza `N` inimigo |
+| Next.js `:3000` | `web/` | Clique vira `C5`; paleta para arrastar navios |
+| Abrir no navegador | `abrir_web.py` + menu **6** | Sobe os dois processos e abre localhost |
+| Destaque da última jogada | tabuleiro web | Casa do último tiro válido com borda dourada |
+| Replay Play / Próxima / Sair | `web/app/replay` | Play avança sozinho; texto continua Enter / Q |
+| Apelidos da sessão | menu / API | Só o nome informado; sem PII extra (LGPD) |
 
 ## Instalação e configuração
 
@@ -167,7 +179,31 @@ python main.py
 | Stats | opção `2` após uma partida | Tabela com partidas, vitórias, aproveitamento |
 | Replay | opção `3` ou fim `[1]` | `Jogada 01/NN - nome - C5 - Agua`; Q sai |
 | GUI | opção `6` | Abre http://127.0.0.1:3000; arrastar frota + clicar tiros |
-| Diário | `docs/diario.md` | T1–T10 preenchidos |
+| Diário | `docs/diario.md` | T1–T11 preenchidos |
+
+### Checklist de aceite — RF01 a RF13
+
+Marcar no **terminal** (`python main.py`) e no **browser** (`localhost:3000`). Os dois lados usam o mesmo núcleo Python.
+
+| RF | Terminal | Browser | Como conferir |
+|----|----------|---------|---------------|
+| RF01 | [ ] | [ ] | Menu com nova partida, stats, replay, créditos, sair |
+| RF02 | [ ] | [ ] | Dois tabuleiros 10×10 (próprio com N; inimigo só tiros) |
+| RF03 | [ ] | [ ] | Frota 2 grandes (4) + 3 pequenos (2) |
+| RF04 | [ ] | [ ] | Texto: auto-place sem overlap. Web: arrastar sem overlap (Reposicionar sorteia) |
+| RF05 | [ ] | [ ] | Fora do 10×10 ou casa repetida não passa a vez |
+| RF06 | [ ] | [ ] | Mensagem água / acerto / afundado |
+| RF07 | [ ] | [ ] | Fim: vencedor, total de jogadas, tempo HH:MM:SS |
+| RF08 | [ ] | [ ] | Dá para começar outra partida pelo menu |
+| RF09 | [ ] | [ ] | PvC e Dois Jogadores |
+| RF10 | [ ] | [ ] | Texto: C/R. Web: paleta + Confirmar / Reposicionar / Limpar |
+| RF11 | [ ] | [ ] | Histórico da partida (fim / replay) |
+| RF12 | [ ] | [ ] | Stats: partidas, vitórias, tiros, acertos, aproveitamento |
+| RF13 | [ ] | [ ] | Texto: Enter/Q. Web: Próxima / Play / Sair |
+| RN01 | [ ] | [ ] | Coordenada `C5` / clique gera `C5` |
+| RN05 | [ ] | [ ] | CPU só atira em casa livre; 3 dificuldades |
+
+Linux (RNF06): rodar `python main.py` num terminal Linux antes da entrega no SIGAA.
 
 ## Ambiente de teste
 
