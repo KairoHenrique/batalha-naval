@@ -56,6 +56,26 @@ def registrar_desempenho(
     _salvar_estatisticas(dados, pasta)
 
 
+def listar_estatisticas(pasta: Path | None = None) -> list[dict]:
+    """Lista serializável para a API (RF12)."""
+    dados = carregar_estatisticas(pasta)
+    linhas: list[dict] = []
+    for nome, ficha in sorted(dados.get("jogadores", {}).items()):
+        acertos = int(ficha.get("acertos", 0))
+        tiros = int(ficha.get("tiros", 0))
+        linhas.append(
+            {
+                "nome": nome,
+                "partidas": int(ficha.get("partidas", 0)),
+                "vitorias": int(ficha.get("vitorias", 0)),
+                "tiros": tiros,
+                "acertos": acertos,
+                "aproveitamento": round(calcular_aproveitamento(acertos, tiros), 1),
+            }
+        )
+    return linhas
+
+
 def calcular_aproveitamento(acertos: int, tiros: int) -> float:
     """Percentual de acertos; 0 se ainda não atirou."""
     if tiros <= 0:

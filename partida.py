@@ -110,6 +110,29 @@ def montar_partida_pvp(nome_j1: str, nome_j2: str) -> Partida:
     )
 
 
+def criar_partida(
+    modo: str,
+    dificuldade: str,
+    jogador_1: Jogador,
+    jogador_2: Jogador,
+) -> Partida:
+    """Monta a sessão já com as frotas conferidas (usada pela API web)."""
+    estado = None
+    if jogador_2.eh_computador or jogador_1.eh_computador:
+        estado = criar_estado_ia(dificuldade)
+    return Partida(
+        modo=modo,
+        dificuldade=dificuldade,
+        jogadores=[jogador_1, jogador_2],
+        estado_ia=estado,
+    )
+
+
+def executar_turno_computador(partida: Partida) -> ResultadoJogada:
+    """Disparo da IA sem I/O de terminal (API e testes)."""
+    return _turno_computador(partida)
+
+
 def jogar(partida: Partida) -> None:
     """Loop de tiros PvC ou PvP até alguém afundar a frota inimiga."""
     while not partida.encerrada():

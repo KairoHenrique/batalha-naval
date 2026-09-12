@@ -24,6 +24,7 @@ from utils import (
     Posicao,
     formatar_coordenada,
     limpar_tela,
+    posicao_dentro_do_tabuleiro,
 )
 
 TIPO_PEQUENO = "pequeno"
@@ -125,6 +126,92 @@ def resumo_frota(navios: list[Navio]) -> str:
         )
         linhas.append(f"  {indice}. {navio.tipo:<8} {casas}")
     return "\n".join(linhas)
+
+
+def frota_vazia() -> tuple[Tabuleiro, list[Navio]]:
+    """Tabuleiro em branco para o jogador posicionar na mão."""
+    return criar_tabuleiro(), []
+
+
+def reconstruir_tabuleiro(navios: list[Navio]) -> Tabuleiro:
+    """Desenha só os navios atuais, sem deixar N solto."""
+    tabuleiro = criar_tabuleiro()
+    for navio in navios:
+        desenhar_navio(tabuleiro, navio)
+    return tabuleiro
+
+
+def listar_restantes(navios: list[Navio]) -> list[dict]:
+    """Navios da composição que ainda não foram colocados."""
+    restantes = list(COMPOSICAO_FROTA)
+    for navio in navios:
+        chave = (navio.tipo, navio.tamanho)
+        if chave in restantes:
+            restantes.remove(chave)
+    return [
+        {"id": f"{tipo}-{indice}", "tipo": tipo, "tamanho": tamanho}
+        for indice, (tipo, tamanho) in enumerate(restantes)
+    ]
+
+
+def frota_esta_completa(navios: list[Navio]) -> bool:
+    """True quando os 5 navios (14 casas) já estão no tabuleiro."""
+    return len(navios) == len(COMPOSICAO_FROTA) and not listar_restantes(navios)
+
+
+def segmento_a_partir(
+    origem: Posicao,
+    tamanho: int,
+    horizontal: bool,
+) -> list[Posicao] | None:
+    """Casas do navio a partir da origem; None se sair do 10x10."""
+    linha, coluna = origem
+    posicoes: list[Posicao] = []
+    for deslocamento in range(tamanho):
+        nova_linha = linha if horizontal else linha + deslocamento
+        nova_coluna = coluna + deslocamento if horizontal else coluna
+        if not posicao_dentro_do_tabuleiro(nova_linha, nova_coluna):
+            return None
+        posicoes.append((nova_linha, nova_coluna))
+    return posicoes
+
+
+def tentar_posicionar(
+    navios: list[Navio],
+    tipo: str,
+    origem: Posicao,
+    horizontal: bool,
+) -> tuple[Tabuleiro, list[Navio], str | None]:
+    """Encaixa um navio na origem ou devolve o motivo da recusa."""
+    if tipo not in {TIPO_GRANDE, TIPO_PEQUENO}:
+        return reconstruir_tabuleiro(navios), navios, "Tipo de navio invalido."
+    tamanho = TAMANHO_GRANDE if tipo == TIPO_GRANDE else TAMANHO_PEQUENO
+    ainda_cabe = any(
+        item["tipo"] == tipo and item["tamanho"] == tamanho
+        for item in listar_restantes(navios)
+    )
+    if not ainda_cabe:
+        return reconstruir_tabuleiro(navios), navios, "Nao restam navios desse tipo."
+    posicoes = segmento_a_partir(origem, tamanho, horizontal)
+    if posicoes is None:
+        return reconstruir_tabuleiro(navios), navios, "O navio nao cabe nessa direcao."
+    tabuleiro = reconstruir_tabuleiro(navios)
+    if not _casas_estao_livres(tabuleiro, posicoes):
+        return tabuleiro, navios, "Essa posicao sobrepoe outro navio."
+    colocados = [*navios, Navio(tipo=tipo, tamanho=tamanho, posicoes=posicoes)]
+    return reconstruir_tabuleiro(colocados), colocados, None
+
+
+def retirar_navio_na_casa(
+    navios: list[Navio],
+    posicao: Posicao,
+) -> tuple[Tabuleiro, list[Navio], str | None]:
+    """Devolve o navio da casa para a paleta."""
+    for indice, navio in enumerate(navios):
+        if posicao in navio.posicoes:
+            restantes = [item for i, item in enumerate(navios) if i != indice]
+            return reconstruir_tabuleiro(restantes), restantes, None
+    return reconstruir_tabuleiro(navios), navios, "Nao ha navio nessa casa."
 
 
 def _encaixar_navio(

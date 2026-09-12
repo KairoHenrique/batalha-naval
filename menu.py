@@ -5,6 +5,7 @@ Nova partida no modo PvC ou PvP (T5/T6).
 
 from __future__ import annotations
 
+from abrir_web import abrir_interface_web
 from estatisticas import exibir_estatisticas
 from partida import (
     exibir_fim_de_jogo,
@@ -23,7 +24,7 @@ def iniciar_menu() -> None:
     """RF01: laço do menu até o usuário sair. RF08: nova partida sempre disponível."""
     while True:
         _exibir_menu_principal()
-        opcao = _ler_opcao({"1", "2", "3", "4", "5"})
+        opcao = _ler_opcao({"1", "2", "3", "4", "5", "6"})
         if opcao == "1":
             iniciar_nova_partida()
         elif opcao == "2":
@@ -35,6 +36,8 @@ def iniciar_menu() -> None:
         elif opcao == "5":
             print("Ate logo.")
             return
+        elif opcao == "6":
+            abrir_interface_web()
 
 
 def iniciar_nova_partida() -> None:
@@ -86,6 +89,7 @@ def _exibir_menu_principal() -> None:
     print("3. Assistir replay da ultima partida")
     print("4. Creditos")
     print("5. Sair")
+    print("6. Abrir")
     print("-" * LARGURA)
 
 

@@ -4,6 +4,7 @@ __pycache__/
 venv/
 web/node_modules/
 web/.next/
+web/tsconfig.tsbuildinfo
 data/*.json
 !data/.gitkeep
 *.pdf

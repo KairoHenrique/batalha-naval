@@ -139,19 +139,30 @@ dificuldades e como foram superadas. Preencher no mesmo dia do código.
 
 ### T9. `partida.py` + `api.py` (localhost:8000)
 
-- **Data:**
-- **O que foi feito:**
-- **Dificuldades:**
-- **Como foram superadas:**
-- **Anotações:** *(ainda não iniciado)*
+- **Data:** 02/09/2026 (código); **12/09/2026** (aceite do professor)
+- **O que foi feito:** `criar_partida` e `executar_turno_computador` em
+  `partida.py` (sem I/O de terminal). `api.py` FastAPI em `:8000`: criar
+  partida, posicionar/retirar frota, tiros, hotseat PvP, stats e replay.
+  CORS só para localhost:3000. Menu texto ganhou opção 6 (Abrir).
+- **Dificuldades:** A GUI não pode vazar o tabuleiro do oponente (`N`).
+  No PvP, após o tiro o próximo jogador ainda não está na frente da tela.
+- **Como foram superadas:** Estado público oculta `N` inimigo. Com
+  `aguardando_troca`, a API não envia tabuleiros até `POST /partidas/pronto`.
+- **Anotações:** Professor aceitou FastAPI + Next.js no lugar de
+  Tkinter/Pygame. Entra no GitHub nesta data.
 
 ### T10. Next.js (localhost:3000)
 
-- **Data:**
-- **O que foi feito:**
-- **Dificuldades:**
-- **Como foram superadas:**
-- **Anotações:** *(ainda não iniciado)*
+- **Data:** 02/09/2026 (código); **12/09/2026** (aceite do professor)
+- **O que foi feito:** App em `web/` (menu, paleta para arrastar navios,
+  tabuleiro clicável 10×10, stats, replay, créditos). Proxy `/backend` →
+  `127.0.0.1:8000`. Visual marinho/ouro. Menu opção 6 sobe API+Next e
+  abre http://127.0.0.1:3000 no navegador.
+- **Dificuldades:** Dois processos (API + Next). Clique na célula precisa
+  virar `C5` como no modo texto.
+- **Como foram superadas:** Rewrite no Next; `coordenadaDeClique` usa A–J
+  e 1–10. Rodar: `uvicorn api:app --port 8000` e `npm run dev` em `web/`.
+- **Anotações:** Aceite do professor em 12/09/2026. Commit da GUI extra.
 
 ---
 
@@ -159,20 +170,11 @@ dificuldades e como foram superadas. Preencher no mesmo dia do código.
 
 ### T11. README, diário completo e checklist de aceite
 
-- **Data:** (em aberto)
-- **O que foi feito:** —
-- **Dificuldades:** —
-- **Como foram superadas:** —
-- **Anotações — decisão em aberto (perguntar ao professor):**
-
-  O enunciado recomenda Tkinter ou Pygame como GUI extra e o mockup 6.1
-  é só o menu texto (5 opções). A interface web **não entra no menu** de
-  `python main.py`: o terminal fica 1–5; se houver GUI, o jogo inteiro
-  (menu, partida, stats, replay) roda **só** nela, como app separado.
-
-  Confirmar com o professor:
-  1. Vale o bônus de interface gráfica se for localhost (FastAPI + Next.js)
-     em vez de Tkinter/Pygame?
-  2. Pode ficar fora do menu texto, como entrada única pela web?
-
-  Sem esse aceite, T9/T10 não começam. O modo texto já cobre RF01–RF13.
+- **Data:** 12/09/2026
+- **O que foi feito:** Professor aceitou FastAPI + Next.js. README e diário
+  atualizados. Menu texto 1–5 (mockup) + 6 Abrir (atalho da GUI).
+- **Dificuldades:** O mockup 6.1 tem 5 itens; a GUI extra precisa de entrada.
+- **Como foram superadas:** Opção 6 só dispara o navegador. O jogo texto
+  continua nas opções 1–5. A partida web (menu, frota, tiros, stats, replay)
+  roda em localhost:3000.
+- **Anotações:** Modo texto cobre RF01–RF13. GUI é bônus.

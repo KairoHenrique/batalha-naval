@@ -18,7 +18,7 @@ Entrega: **29/09/2026**, pelo SIGAA, com o link deste repositório. Apresentaç�
 
 O núcleo do jogo é Python 3.10+ (aqui, 3.12), sem dependências externas no modo texto. A lógica de cada RF fica no módulo correspondente — exigência do enunciado quando pede *função*.
 
-Trabalho **individual**. Estado atual: Semana 4, **T8 concluído** (stats + replay). Falta a GUI web (T9/T10) e o fechamento do README (T11).
+Trabalho **individual**. Estado atual: Semana 4–5, **T8–T10 concluídos**. GUI web extra aceita pelo professor (FastAPI + Next.js). Falta só o fechamento fino do README (T11) se o Comitê pedir ajuste.
 
 ### Decisões de interpretação
 
@@ -27,7 +27,7 @@ Trabalho **individual**. Estado atual: Semana 4, **T8 concluído** (stats + repl
 | Frota (não especificada no PDF) | 2 navios **grandes** (4 casas) + 3 **pequenos** (2 casas) = 14 casas |
 | RF04 + RF10 | Posicionamento **automático** sem overlap; o jogador **confere** e escolhe confirmar (C) ou reposicionar (R) |
 | Coordenadas (RN01) | Letra + número, colunas A–J, linhas 1–10 (ex.: `C5`, `C10`) |
-| GUI extra (bônus) | **Em aberto — perguntar ao professor (T11).** Menu texto fica só 1–5. Se a GUI existir, o jogo inteiro roda nela (app separado), não por opção do terminal. Enunciado cita Tkinter/Pygame; o plano cogitou FastAPI + Next.js. |
+| GUI extra (bônus) | **Aceita pelo professor (12/09/2026):** FastAPI (`api.py`, `:8000`) + Next.js (`web/`, `:3000`) no lugar de Tkinter/Pygame. O modo texto (`python main.py`) continua o aceite dos 100 pts. Menu opção **6 Abrir** sobe a API/o front e abre o navegador. Na web o jogador arrasta a frota; no texto a frota ainda é automática (C/R). |
 | IA extra (bônus) | Três níveis no PvC (fácil / hunt-target / parity) — Semana 3 |
 
 ### Requisitos funcionais
@@ -70,13 +70,17 @@ batalha-naval/
 ├── utils.py              # RF05 / RN01 / RN02 — parse C5, tempo HH:MM:SS
 ├── tabuleiro.py          # RF02 — matriz 10x10 e impressão do mockup 6.3
 ├── navios.py             # RF03 / RF04 / RF10 — frota, auto-place, conferência
+├── api.py                # T9 — FastAPI localhost:8000 (mesma lógica do texto)
+├── abrir_web.py          # menu 6: sobe API + Next e abre o navegador
+├── requirements.txt      # fastapi, uvicorn (só a GUI)
+├── web/                  # T10 — Next.js localhost:3000
 ├── data/                 # estatisticas.json e ultima_partida.json (runtime)
 ├── docs/
 │   └── diario.md         # diário fatiado em T1–T11 (enunciado, item 10)
 └── PYTHON_…BatalhaNaval.pdf   # enunciado local (não versionado)
 ```
 
-Próximos arquivos extras: `api.py`, `web/` (Next.js). A árvore obrigatória do item 5 está completa.
+A árvore obrigatória do item 5 está completa. `api.py` e `web/` são o bônus de GUI.
 
 ## Implementação
 
@@ -90,6 +94,7 @@ flowchart TD
     menuLoop --> replay["3 replay"]
     menuLoop --> creditos["4 creditos"]
     menuLoop --> sair["5 sair"]
+    menuLoop --> abrir["6 Abrir GUI web"]
     nova --> modo{"modo 6.2"}
     modo --> pvc["Jogador vs Computador"]
     modo --> pvp["Dois Jogadores"]
@@ -105,15 +110,16 @@ flowchart TD
 2. **`tabuleiro.py`** — `criar_tabuleiro()` devolve 10×10 com `~`. Símbolos do mockup: `~` água, `N` navio, `X` acerto, `O` água jogada. `imprimir_tabuleiro` alinha a linha 10 (`>2`). `ocultar_navios` troca `N` por `~` (visão do inimigo).
 3. **`navios.py`** — dataclass `Navio` (tipo, tamanho, posições, acertos). Segmento sorteado **já cabe** no tabuleiro (`TAMANHO - comprimento`), horizontal ou vertical. Grandes entram primeiro. Se um navio não encaixa, a frota inteira é gerada de novo. `conferir_posicionamento(nome)` é a função do RF10: a lógica de C/R está nela.
 4. **`menu.py`** — `iniciar_menu()` é o RF01. Nova partida chama `jogar`. Opção 2 estatísticas, 3 replay.
-5. **`main.py`** — `python main.py` abre o menu texto. A interface web, quando existir, será um app separado (não entra neste menu).
-6. **`jogador.py` / `partida.py`** — loop PvC/PvP. `aplicar_tiro` é RF05/RF06. Fim de jogo é RF07; persiste stats e replay.
+5. **`main.py`** — `python main.py` abre o menu texto. Opção 6 chama `abrir_web.py`.
+6. **`jogador.py` / `partida.py`** — loop PvC/PvP. `aplicar_tiro` é RF05/RF06. Fim de jogo é RF07; persiste stats e replay. `criar_partida` / `executar_turno_computador` servem a API sem I/O de terminal.
 7. **`computador.py`** — fácil aleatório; médio hunt-target; difícil hunt-target + parity.
 8. **`estatisticas.py` / `replay.py`** — JSON em `data/`. Aproveitamento = acertos/tiros. Replay Enter/Q.
+9. **`api.py` + `web/`** — GUI extra. CORS só localhost:3000. O front não mostra `N` do inimigo.
 
 ## Demonstração
 
 ```bash
-python main.py         # menu (RF01) — 1 nova partida, 4 créditos, 5 sair
+python main.py         # menu (RF01) — 1 nova partida, 4 créditos, 5 sair, 6 Abrir
 python tabuleiro.py    # mockup 6.3
 python navios.py       # 40 frotas sem overlap + conferência C/R
 ```
@@ -122,7 +128,7 @@ Nova partida PvC ou PvP. Tiros `C5`. Fim com vencedor, jogadas e tempo. Menu 2 =
 
 ## Instalação e configuração
 
-**Pré-requisitos:** Python 3.10 ou superior (desenvolvido em 3.12). Nenhuma biblioteca extra no modo texto.
+**Pré-requisitos:** Python 3.10 ou superior (desenvolvido em 3.12). Modo texto: só stdlib. GUI extra: `requirements.txt` + Node.js (pasta `web/`).
 
 ```bash
 # 1. Clonar o repositório
@@ -135,6 +141,14 @@ python main.py
 # 3. Tabuleiro e frota (inspeção)
 python tabuleiro.py
 python navios.py
+
+# 4. GUI extra (aceita pelo professor)
+python -m pip install -r requirements.txt
+cd web
+npm install
+# de volta à raiz: python main.py → opção 6, ou:
+# python -m uvicorn api:app --host 127.0.0.1 --port 8000
+# npm run dev   (em web/)
 ```
 
 No PowerShell, se o prompt estiver em `Facul`:
@@ -148,11 +162,12 @@ python main.py
 
 | Passo | Comando / arquivo | Resultado esperado |
 |-------|-------------------|--------------------|
-| Menu | `python main.py` | Mockup 6.1 com opções 1–5 |
+| Menu | `python main.py` | Mockup 6.1 com opções 1–5 e 6 Abrir |
 | Nova partida | opção `1` → modo → (C/R) → tiros | Água/acerto/afundado; fim RF07 |
 | Stats | opção `2` após uma partida | Tabela com partidas, vitórias, aproveitamento |
 | Replay | opção `3` ou fim `[1]` | `Jogada 01/NN - nome - C5 - Agua`; Q sai |
-| Diário | `docs/diario.md` | T1–T8 preenchidos; T9–T11 em branco |
+| GUI | opção `6` | Abre http://127.0.0.1:3000; arrastar frota + clicar tiros |
+| Diário | `docs/diario.md` | T1–T10 preenchidos |
 
 ## Ambiente de teste
 
@@ -165,7 +180,7 @@ O enunciado pede validação em **Linux** (RNF06) antes da entrega. O código de
 
 ## Recursos utilizados
 
-`Python 3.12` · stdlib (`dataclasses`, `random`, `copy`) · `Visual Studio Code` / Cursor · GitHub
+`Python 3.12` · stdlib (`dataclasses`, `random`, `copy`) · FastAPI / Uvicorn (GUI) · Next.js 15 (GUI) · `Visual Studio Code` / Cursor · GitHub
 
 Enunciado: *PYTHON_Trabalho1_2026-02_BatalhaNaval* (Prof. Guido Pantuza). PEP 8. Diário opcional do item 10 em [`docs/diario.md`](docs/diario.md).
 
