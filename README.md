@@ -1,6 +1,6 @@
 # Batalha Naval — GPTech Games
 
-[![status](https://img.shields.io/badge/status-T11%20aceite-success)](https://github.com/KairoHenrique/batalha-naval)
+[![status](https://img.shields.io/badge/status-concluído-success)](https://github.com/KairoHenrique/batalha-naval)
 [![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](https://www.python.org/)
 [![Python](https://img.shields.io/badge/disciplina-Programação%20em%20Python-0B3D91)](https://github.com/KairoHenrique/batalha-naval)
 [![modalidade](https://img.shields.io/badge/modalidade-individual-important)](https://github.com/KairoHenrique)
@@ -10,15 +10,9 @@
 
 Este repositório é o **1º trabalho** da disciplina *Programação em Python* (CEFET-MG, Campus Divinópolis), professor **Guido Pantuza**. O enunciado coloca o aluno no papel de desenvolvedor júnior da GPTech Games: entregar um Batalha Naval em modo texto (GUI web é bônus), com programação estruturada, matrizes, validação de entradas e módulos coesos (PEP 8).
 
-A **interpretação do enunciado faz parte da avaliação**. Decisões que o PDF não fecha (tamanho da frota, conferência após o auto-posicionamento, GUI em localhost em vez de Tkinter) estão documentadas abaixo e no diário.
-
-Entrega: **29/09/2026**, pelo SIGAA, com o link deste repositório. Apresentação oral ao “Comitê de Aceite” (professor), em ordem alfabética.
-
 ## Descrição do projeto
 
 O núcleo do jogo é Python 3.10+ (aqui, 3.12), sem dependências externas no modo texto. A lógica de cada RF fica no módulo correspondente — exigência do enunciado quando pede *função*.
-
-Trabalho **individual**. Semanas 1–5 concluídas (T1–T11). GUI web extra aceita pelo professor (FastAPI + Next.js). O modo texto (`python main.py`) é o aceite dos 100 pts.
 
 ### Decisões de interpretação
 
@@ -50,7 +44,7 @@ Identificadores do Product Owner. O README precisa referenciá-los na entrega; a
 | RF12 | Estatísticas (partidas, acertos, aproveitamento) | `estatisticas.py` | feito |
 | RF13 | Replay da última partida | `replay.reproduzir_ultima_partida` | feito |
 
-Regras de negócio cobertas: **RN01–RN05**. IA extra: fácil / médio / difícil. Checklist de aceite (terminal + browser) no fim deste README.
+Regras de negócio cobertas: **RN01–RN05**. IA extra: fácil / médio / difícil.
 
 ## Estrutura geral do projeto
 
@@ -154,7 +148,7 @@ python main.py
 python tabuleiro.py
 python navios.py
 
-# 4. GUI extra (aceita pelo professor)
+# 4. GUI
 python -m pip install -r requirements.txt
 cd web
 npm install
@@ -163,11 +157,16 @@ npm install
 # npm run dev   (em web/)
 ```
 
-No PowerShell, se o prompt estiver em `Facul`:
+Na raiz do repositório:
 
 ```powershell
-cd "C:\Users\kairo\Videos\Facul\Python\Batalha Naval"
+# Windows
 python main.py
+```
+
+```bash
+# Linux
+python3 main.py
 ```
 
 ### Teste rápido (checklist)
@@ -181,44 +180,18 @@ python main.py
 | GUI | opção `6` | Abre http://127.0.0.1:3000; arrastar frota + clicar tiros |
 | Diário | `docs/diario.md` | T1–T11 preenchidos |
 
-### Checklist de aceite — RF01 a RF13
-
-Marcar no **terminal** (`python main.py`) e no **browser** (`localhost:3000`). Os dois lados usam o mesmo núcleo Python.
-
-| RF | Terminal | Browser | Como conferir |
-|----|----------|---------|---------------|
-| RF01 | [ ] | [ ] | Menu com nova partida, stats, replay, créditos, sair |
-| RF02 | [ ] | [ ] | Dois tabuleiros 10×10 (próprio com N; inimigo só tiros) |
-| RF03 | [ ] | [ ] | Frota 2 grandes (4) + 3 pequenos (2) |
-| RF04 | [ ] | [ ] | Texto: auto-place sem overlap. Web: arrastar sem overlap (Reposicionar sorteia) |
-| RF05 | [ ] | [ ] | Fora do 10×10 ou casa repetida não passa a vez |
-| RF06 | [ ] | [ ] | Mensagem água / acerto / afundado |
-| RF07 | [ ] | [ ] | Fim: vencedor, total de jogadas, tempo HH:MM:SS |
-| RF08 | [ ] | [ ] | Dá para começar outra partida pelo menu |
-| RF09 | [ ] | [ ] | PvC e Dois Jogadores |
-| RF10 | [ ] | [ ] | Texto: C/R. Web: paleta + Confirmar / Reposicionar / Limpar |
-| RF11 | [ ] | [ ] | Histórico da partida (fim / replay) |
-| RF12 | [ ] | [ ] | Stats: partidas, vitórias, tiros, acertos, aproveitamento |
-| RF13 | [ ] | [ ] | Texto: Enter/Q. Web: Próxima / Play / Sair |
-| RN01 | [ ] | [ ] | Coordenada `C5` / clique gera `C5` |
-| RN05 | [ ] | [ ] | CPU só atira em casa livre; 3 dificuldades |
-
-Linux (RNF06): rodar `python main.py` num terminal Linux antes da entrega no SIGAA.
-
 ## Ambiente de teste
 
-- **Processador:** AMD Ryzen 7 5700X (8 núcleos / 16 *threads*)
-- **Memória RAM:** 32 GB
-- **Sistema operacional:** Microsoft Windows 11 Pro (build 26200)
-- **Interpretador:** Python 3.12.10
+Notebook
 
-O enunciado pede validação em **Linux** (RNF06) antes da entrega. O código de tela usa `cls` no Windows e `clear` no Linux; o restante é só stdlib.
+- **Processador:** 12th Gen Intel® Core™ i7-1255U
+- **Memória RAM:** 40 GB DDR4 3200 MHz
+- **Sistema operacional:** Debian GNU/Linux 13
+- **Interpretador:** Python 3 (`python3`)
 
 ## Recursos utilizados
 
 `Python 3.12` · stdlib (`dataclasses`, `random`, `copy`) · FastAPI / Uvicorn (GUI) · Next.js 15 (GUI) · `Visual Studio Code` / Cursor · GitHub
-
-Enunciado: *PYTHON_Trabalho1_2026-02_BatalhaNaval* (Prof. Guido Pantuza). PEP 8. Diário opcional do item 10 em [`docs/diario.md`](docs/diario.md).
 
 ## Autor
 
