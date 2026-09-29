@@ -64,7 +64,7 @@ flowchart TD
 
 ---
 
-## 💡 Registro de Decisões Arquiteturais (ADRs)
+## 💡 Registro de Decisões Arquiteturais
 
 Para garantir rastreabilidade, todas as decisões técnicas e de design de produto foram documentadas abaixo, explicando as alternativas consideradas, a escolha e as justificativas técnicas.
 
