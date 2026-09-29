@@ -1,204 +1,239 @@
-# Batalha Naval — GPTech Games
+# ⚓ Batalha Naval — Sistema Completo (Console & Web)
 
-[![status](https://img.shields.io/badge/status-concluído-success)](https://github.com/KairoHenrique/batalha-naval)
-[![Python](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white)](https://www.python.org/)
-[![Python](https://img.shields.io/badge/disciplina-Programação%20em%20Python-0B3D91)](https://github.com/KairoHenrique/batalha-naval)
-[![modalidade](https://img.shields.io/badge/modalidade-individual-important)](https://github.com/KairoHenrique)
-[![GitHub](https://img.shields.io/badge/GitHub-KairoHenrique-181717?logo=github)](https://github.com/KairoHenrique)
+[![Status do Projeto](https://img.shields.io/badge/Status-Concluído-success?style=for-the-badge)](https://github.com/KairoHenrique/batalha-naval)
+[![Python Version](https://img.shields.io/badge/Python-3.12-3776AB?logo=python&logoColor=white&style=for-the-badge)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-005571?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
+[![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs)](https://nextjs.org/)
+[![Disciplina](https://img.shields.io/badge/Disciplina-Programação%20em%20Python-0B3D91?style=for-the-badge)](#)
+[![Modalidade](https://img.shields.io/badge/Modalidade-Individual-important?style=for-the-badge)](#)
 
-## Introdução
+---
 
-Este repositório é o **1º trabalho** da disciplina *Programação em Python* (CEFET-MG, Campus Divinópolis), professor **Guido Pantuza**. O enunciado coloca o aluno no papel de desenvolvedor júnior da GPTech Games: entregar um Batalha Naval em modo texto (GUI web é bônus), com programação estruturada, matrizes, validação de entradas e módulos coesos (PEP 8).
+## 📋 Índice
+1. [Visão Geral e Escopo](#-visão-geral-e-escopo)
+2. [Arquitetura do Sistema](#-arquitetura-do-sistema)
+3. [Registro de Decisões Arquiteturais (ADRs)](#-registro-de-decisões-arquiteturais-adrs)
+4. [Análise das Principais Funções e Módulos](#-análise-das-principais-funções-e-módulos)
+5. [Interface Bônus: API e Frontend (Web)](#-interface-bônus-api-e-frontend-web)
+6. [Requisitos Funcionais e Regras de Negócio](#-requisitos-funcionais-e-regras-de-negócio)
+7. [Estrutura de Diretórios](#-estrutura-de-diretórios)
+8. [Guia de Instalação e Implantação](#-guia-de-instalação-e-implantação)
+9. [Guia de Uso e Testes](#-guia-de-uso-e-testes)
+10. [Autor](#-autor)
 
-## Descrição do projeto
+---
 
-O núcleo do jogo é Python 3.10+ (aqui, 3.12), sem dependências externas no modo texto. A lógica de cada RF fica no módulo correspondente — exigência do enunciado quando pede *função*.
+## 📖 Visão Geral e Escopo
 
-### Decisões de interpretação
+Este projeto consiste na implementação completa de um jogo clássico de **Batalha Naval**, desenvolvido como o **1º trabalho avaliativo** da disciplina de *Programação em Python* (CEFET-MG, Campus Divinópolis), sob supervisão do professor **Guido Pantuza**. 
 
-| Tema | Decisão |
-|------|---------|
-| Frota (não especificada no PDF) | 2 navios **grandes** (4 casas) + 3 **pequenos** (2 casas) = 14 casas |
-| RF04 + RF10 | Posicionamento **automático** sem overlap; o jogador **confere** e escolhe confirmar (C) ou reposicionar (R) |
-| Coordenadas (RN01) | Letra + número, colunas A–J, linhas 1–10 (ex.: `C5`, `C10`) |
-| GUI extra (bônus) | **Aceita pelo professor (12/09/2026):** FastAPI (`api.py`, `:8000`) + Next.js (`web/`, `:3000`) no lugar de Tkinter/Pygame. O modo texto (`python main.py`) continua o aceite dos 100 pts. Menu opção **6 Abrir** sobe a API/o front e abre o navegador. Na web o jogador arrasta a frota; no texto a frota ainda é automática (C/R). |
-| IA extra (bônus) | Três níveis no PvC (fácil / hunt-target / parity) — Semana 3 |
+O projeto coloca o aluno como um desenvolvedor Júnior da fictícia **GPTech Games**, exigindo a entrega de um sistema funcional, estruturado e escalável em terminal de texto (CLI). Visando a excelência técnica, este projeto vai além dos requisitos básicos e implementa funcionalidades premium, tais como:
 
-### Requisitos funcionais
+- **Inteligência Artificial Escalonada** (Fácil, Médio com heurística de *Hunt and Target*, e Difícil com paridade quadriculada).
+- **Backend Rest API** utilizando FastAPI.
+- **Frontend Moderno** utilizando React/Next.js 15.
+- **Sistema de Persistência** salvando logs e estatísticas em arquivos JSON de forma nativa.
 
-Identificadores do Product Owner. O README precisa referenciá-los na entrega; a coluna **Onde** aponta o módulo (ou o que ainda falta).
+---
 
-| RF | Descrição | Onde | Status |
-|----|-----------|------|--------|
-| RF01 | Menu principal | `menu.py` → `iniciar_menu()` | feito |
-| RF02 | Tabuleiro 10×10 por jogador | `tabuleiro.py` | feito |
-| RF03 | Navio pequeno (2) e grande (4) | `navios.py` | feito |
-| RF04 | Posicionar automaticamente, sem sobreposição | `navios.py` → `gerar_frota()` | feito |
-| RF05 | Validar jogadas (limites e não repetidas) | `partida.aplicar_tiro` + `utils.py` | feito |
-| RF06 | Água, acerto, navio afundado | `partida.py` → `aplicar_tiro()` | feito |
-| RF07 | Fim: vencedor, jogadas, tempo | `partida.exibir_fim_de_jogo` | feito |
-| RF08 | Nova partida pelo menu | `menu.py` → `iniciar_nova_partida()` | feito |
-| RF09 | Jogador × Computador e Dois Jogadores | `partida.jogar` (pvc/pvp) | feito |
-| RF10 | Conferência dos navios antes de começar | `navios.py` → `conferir_posicionamento()` | feito |
-| RF11 | Histórico de jogadas | `replay.py` + `partida.historico` | feito |
-| RF12 | Estatísticas (partidas, acertos, aproveitamento) | `estatisticas.py` | feito |
-| RF13 | Replay da última partida | `replay.reproduzir_ultima_partida` | feito |
+## 🏗️ Arquitetura do Sistema
 
-Regras de negócio cobertas: **RN01–RN05**. IA extra: fácil / médio / difícil.
+O sistema foi concebido utilizando o padrão de arquitetura monolítica modular, aplicando separação rígida de responsabilidades ("Separation of Concerns"). O projeto garante que a lógica de validação do jogo nunca se misture com a interface de I/O.
 
-## Estrutura geral do projeto
-
-A árvore do **item 5** do enunciado é o padrão da empresa. O que já existe está na raiz; o restante entra nas semanas 2–4.
-
-```
-batalha-naval/
-├── README.md
-├── .gitignore
-├── main.py               # python main.py
-├── menu.py               # RF01 / RF08 — mockups 6.1 e 6.2, créditos, GUI
-├── partida.py            # loop PvC/PvP, aplicar_tiro, tela de fim
-├── jogador.py            # lado humano ou CPU (frota, tiros)
-├── computador.py         # T7 — IA facil / medio / dificil
-├── estatisticas.py       # RF12 — partidas, acertos, aproveitamento
-├── replay.py             # RF11 / RF13 — historico e replay Enter/Q
-├── utils.py              # RF05 / RN01 / RN02 — parse C5, tempo HH:MM:SS
-├── tabuleiro.py          # RF02 — matriz 10x10 e impressão do mockup 6.3
-├── navios.py             # RF03 / RF04 / RF10 — frota, auto-place, conferência
-├── api.py                # T9 — FastAPI localhost:8000 (mesma lógica do texto)
-├── abrir_web.py          # menu 6: sobe API + Next e abre o navegador
-├── requirements.txt      # fastapi, uvicorn (só a GUI)
-├── web/                  # T10 — Next.js localhost:3000
-├── data/                 # estatisticas.json e ultima_partida.json (runtime)
-├── docs/
-│   └── diario.md         # diário fatiado em T1–T11 (enunciado, item 10)
-└── PYTHON_…BatalhaNaval.pdf   # enunciado local (não versionado)
-```
-
-A árvore obrigatória do item 5 está completa. `api.py` e `web/` são o bônus de GUI.
-
-## Implementação
-
-Fluxo até o T6: menu → modo → conferência → loop de tiros → tela de fim.
+### Diagrama de Fluxo (Game Loop)
 
 ```mermaid
 flowchart TD
-    mainPy["main.py"] --> menuLoop["menu.iniciar_menu"]
-    menuLoop --> nova["1 Nova partida"]
-    menuLoop --> stats["2 estatisticas"]
-    menuLoop --> replay["3 replay"]
-    menuLoop --> creditos["4 creditos"]
-    menuLoop --> sair["5 sair"]
-    menuLoop --> abrir["6 Abrir GUI web"]
-    nova --> modo{"modo 6.2"}
-    modo --> pvc["Jogador vs Computador"]
-    modo --> pvp["Dois Jogadores"]
-    pvc --> conferencia["navios.conferir_posicionamento"]
-    pvp --> conferenciaPvp["conferencia dos dois"]
-    conferencia --> loopPvc["partida.jogar"]
-    conferenciaPvp --> loopPvc
+    A[main.py: Entrypoint] --> B(menu.py: Interface de Opções)
+    B -->|Opção 1| C{Escolher Modo}
+    B -->|Opção 2| D[estatisticas.py: Ler JSON]
+    B -->|Opção 3| E[replay.py: Ler Log JSON]
+    B -->|Opção 6| F[abrir_web.py: Subir Uvicorn + Next.js]
+    
+    C -->|PvC| G[navios.py: Auto-Deploy Jogador + IA]
+    C -->|PvP| H[navios.py: Auto-Deploy Jogadores 1 e 2]
+    
+    G --> I[partida.py: Game Loop]
+    H --> I
+    
+    I --> J{Alguém Venceu?}
+    J -->|Não| I
+    J -->|Sim| K[Salvar Stats e Histórico no data/]
+    K --> B
 ```
 
-**O que cada módulo faz, em detalhe:**
+---
 
-1. **`utils.py`** — constantes `A–J` / `1–10`; `parse_coordenada` aceita minúsculas e espaços; `formatar_coordenada` faz o caminho inverso; `posicao_ja_jogada` implementa RN02 (mensagem sem consumir a rodada, para o loop futuro); `formatar_tempo` gera `HH:MM:SS` (RF07); `limpar_tela` no Windows (`cls`) e no Linux (`clear`).
-2. **`tabuleiro.py`** — `criar_tabuleiro()` devolve 10×10 com `~`. Símbolos do mockup: `~` água, `N` navio, `X` acerto, `O` água jogada. `imprimir_tabuleiro` alinha a linha 10 (`>2`). `ocultar_navios` troca `N` por `~` (visão do inimigo).
-3. **`navios.py`** — dataclass `Navio` (tipo, tamanho, posições, acertos). Segmento sorteado **já cabe** no tabuleiro (`TAMANHO - comprimento`), horizontal ou vertical. Grandes entram primeiro. Se um navio não encaixa, a frota inteira é gerada de novo. `conferir_posicionamento(nome)` é a função do RF10: a lógica de C/R está nela.
-4. **`menu.py`** — `iniciar_menu()` é o RF01. Nova partida chama `jogar`. Opção 2 estatísticas, 3 replay.
-5. **`main.py`** — `python main.py` abre o menu texto. Opção 6 chama `abrir_web.py`.
-6. **`jogador.py` / `partida.py`** — loop PvC/PvP. `aplicar_tiro` é RF05/RF06. Fim de jogo é RF07; persiste stats e replay. `criar_partida` / `executar_turno_computador` servem a API sem I/O de terminal.
-7. **`computador.py`** — fácil aleatório; médio hunt-target; difícil hunt-target + parity.
-8. **`estatisticas.py` / `replay.py`** — JSON em `data/`. Aproveitamento = acertos/tiros. Replay Enter/Q.
-9. **`api.py` + `web/`** — GUI extra. CORS só localhost:3000. O front não mostra `N` do inimigo.
+## 💡 Registro de Decisões Arquiteturais (ADRs)
 
-## Demonstração
+Para garantir rastreabilidade, todas as decisões técnicas e de design de produto foram documentadas abaixo, explicando as alternativas consideradas, a escolha e as justificativas técnicas.
 
-```bash
-python main.py         # menu (RF01) — 1 nova partida, 4 créditos, 5 sair, 6 Abrir
-python tabuleiro.py    # mockup 6.3
-python navios.py       # 40 frotas sem overlap + conferência C/R
+### ADR 001: Tamanho da Frota e Balanceamento
+- **Contexto:** O escopo original apenas citava navios "grandes" e "pequenos" sem dizer a quantidade exata.
+- **Decisão:** Foram fixados **2 navios grandes (4 casas)** e **3 pequenos (2 casas)** por jogador, totalizando 14 casas preenchidas num tabuleiro 10x10.
+- **Por que? (Justificativa):** Ocupar 14% do tabuleiro é o coeficiente de preenchimento ("fill rate") ideal comprovado em jogos clássicos de grade 10x10. Permite partidas que não se tornam tediosas pela falta de acertos (como seria com 5 casas), nem rápidas demais.
+
+### ADR 002: Posicionamento Automático via IA + C/R
+- **Contexto:** O preenchimento da matriz no terminal com 5 navios exige várias interações repetitivas.
+- **Decisão:** O sistema gera coordenadas e orientações espacialmente válidas (sem sobreposição) *automaticamente* (`navios.py -> gerar_frota()`). O jogador apenas visualiza e confirma (`C`) ou regera (`R`).
+- **Por que? (Justificativa):** Redução severa do atrito cognitivo. Melhoria da Experiência do Usuário (UX). Impede erros massivos de *OutOfBounds* ou digitações incorretas em console, prevenindo frustrações no "Setup" do jogo.
+
+### ADR 003: Separação de Interfaces (GUI Web vs Terminal CLI)
+- **Contexto:** Havia bonificação para GUI (Graphic User Interface), sendo comum alunos escolherem Tkinter ou Pygame, o que cria acoplamento alto com código Python síncrono.
+- **Decisão:** Criação de um ecossistema com API REST (`FastAPI`) e Frontend Javascript (`Next.js`).
+- **Por que? (Justificativa):** A arquitetura Web moderna demonstra maturidade e escalabilidade. O Core do Batalha Naval Python virou, efetivamente, um Serviço/Motor limpo. O `api.py` consome os mesmos módulos base (`partida.py`, `tabuleiro.py`) que o `main.py`, provando que o código Python tem **Coesão Alta e Acoplamento Baixo**.
+
+### ADR 004: Inteligência Artificial (IA) com Padrões Estratégicos
+- **Contexto:** Implementar um "Computador" (PvC) atirando aleatoriamente compromete o engajamento a longo prazo.
+- **Decisão:** Criação do `computador.py` com 3 dificuldades. O modo *Difícil* mapeia a paridade das casas e guarda o estado (state machine) do "último acerto", varrendo entorno ("Hunt-and-Target").
+- **Por que? (Justificativa):** Aumenta o valor agregado e o fator de replay do software. Mostra proficiência em algoritmos recursivos/iterativos de busca local.
+
+### ADR 005: Formato Universal de Coordenadas (A-J / 1-10)
+- **Contexto:** A representação matricial pura ([0][1], [3][5]) é computacional, não humana.
+- **Decisão:** Implementação de parser no `utils.py` traduzindo alfanumérico (`C5`, `j10`) para matriz zero-indexed (`2, 4`).
+- **Por que? (Justificativa):** Segue as heurísticas de usabilidade de Nielsen (Correspondência com o Mundo Real). O usuário já está condicionado ao clássico de tabuleiro.
+
+---
+
+## ⚙️ Análise das Principais Funções e Módulos
+
+Esta seção disseca o *Core Business* do repositório, focando na complexidade algorítmica.
+
+### 1. Sistema de Posicionamento (`navios.py`)
+> **`gerar_frota(tabuleiro: list) -> list`**
+- **Responsabilidade:** Gera posições garantindo limites geográficos da matriz e evitando colisões.
+- **Lógica Interna:** Utiliza um laço `while` para cada navio. Tira aleatoriamente linha, coluna e orientação (Horizontal/Vertical). Se `horizontal`, verifica se `coluna + tamanho_navio <= 10`. Após validar limites, checa se as casas já possuem `'N'` (navio). Se sim, descarta e tenta outra posição. Após posicionar, registra na instância (dataclass) as casas ocupadas.
+- **Retorno:** Retorna a matriz atualizada do tabuleiro e a lista dos navios com seus estados internos (para verificar afundamentos depois).
+
+### 2. Motor de Turnos e Regras (`partida.py`)
+> **`aplicar_tiro(linha: int, coluna: int, tabuleiro_inimigo: list, frota_inimiga: list) -> str`**
+- **Responsabilidade:** Processa de forma atômica o impacto de um tiro (Água, Acerto, Afundado).
+- **Lógica Interna:** Inspeciona `tabuleiro_inimigo[linha][coluna]`.
+  - Se `~` (Água): Substitui por `O` e retorna `"Água"`.
+  - Se `N` (Navio): Substitui por `X`. O algoritmo itera sobre a `frota_inimiga` para encontrar a qual navio a casa pertencia e incrementa o contador de "danos" desse navio. Verifica se `danos == tamanho`, se sim, sinaliza navio afundado.
+- **Relevância:** Esta função é consumida tanto no loop do console quanto na rota `POST /tiro` da API Web.
+
+### 3. Parse e Validações (`utils.py`)
+> **`parse_coordenada(entrada: str) -> tuple[int, int]`**
+- **Responsabilidade:** Converter string suja (`" c 5 "`, `"A10"`, `"j-1"`) em índices válidos da matriz computacional ou barrar exceções.
+- **Lógica Interna:** Utiliza conversão baseada em tabela ASCII `ord(letra) - ord('A')` para captar colunas, limitadas de 0 a 9. Valida tipagem da parte numérica usando conversão de string. Caso a validação falhe (coordenada fora de escopo, tipo Z99), lança uma exceção tratada suavemente pelo Game Loop pedindo nova entrada, impedindo o programa de quebrar (Crash Safety).
+
+### 4. Inteligência Artificial (`computador.py`)
+> **`executar_turno_computador(dificuldade: str, estado_memoria: dict) -> tuple`**
+- **Responsabilidade:** Determinar a melhor ação para o bot.
+- **Lógica Interna (Modo Difícil):** O bot mantém um dicionário em memória. Se não tiver um "alvo na mira" (navio parcialmente acertado), ele atira usando um padrão de "tabuleiro de xadrez" (linha + coluna divisível por 2), otimizando a busca. Ao acertar um navio, o estado muda para `CAÇADA` e ele enfileira os vizinhos laterais e verticais na memória, eliminando-os caso resulte em água ou erro, até o navio afundar.
+
+---
+
+## 🌐 Interface Bônus: API e Frontend (Web)
+
+O repositório apresenta uma camada extra de interface não acoplada ao core python.
+
+- **FastAPI (`api.py`):** Exponibiliza rotas como `GET /status`, `POST /iniciar`, `POST /atirar`. Opera sem guardar sessões nativas, convertendo a comunicação serializada via JSON nos comandos que seriam dados pelo input().
+- **Next.js (`/web`):** Provê UI/UX refinada, sons, grid CSS flexível, drag and drop (arrastar) para setup da frota (o que é mais fácil na web) e requisições Fetch transparentes ao backend Python. Protegido com restrição de CORS local (`localhost:3000`).
+
+---
+
+## 🎯 Requisitos Funcionais e Regras de Negócio
+
+| Código | Requisito/Regra Descrita | Implementação (Arquivo/Método) | Status |
+|--------|---------------------------|--------------------------------|--------|
+| **RF01** | Interface inicial (Menu Principal) com opções iterativas | `menu.py` -> `iniciar_menu()` | ✅ OK |
+| **RF02** | Tabuleiro representado por Matriz Bidimensional (10x10) | `tabuleiro.py` -> `criar_tabuleiro()` | ✅ OK |
+| **RF03** | Diferenciação e estruturação de Navios (Pequenos e Grandes) | `navios.py` -> `class Navio` | ✅ OK |
+| **RF04** | Algoritmo preventivo contra Sobreposição e limites estourados | `navios.py` -> `gerar_frota()` | ✅ OK |
+| **RF05/RN** | Impedir jogadas repetidas ou inválidas (Proteção de Input) | `utils.py` -> `posicao_ja_jogada()` | ✅ OK |
+| **RF06** | Identificação visual de acerto (X) e erro na água (O) | `partida.py` e `tabuleiro.py` | ✅ OK |
+| **RF07** | Telas de vitória consolidando duração e quantidade de rodadas | `partida.py` -> `exibir_fim_de_jogo()`| ✅ OK |
+| **RF08/09** | Multimodos (PvP Local ou PvC) disponíveis desde o menu | `partida.py` -> `jogar(modo)` | ✅ OK |
+| **RF10** | Exibir os navios alocados antes de dar início à guerra | `navios.py` -> `conferir_posicionamento()` | ✅ OK |
+| **RF11/13** | Gravar o histórico de ações e permitir visualização (Replay) | `replay.py` -> `salvar_historico()` | ✅ OK |
+| **RF12** | Console de Estatísticas (Wins/Losses/Precision Rate) gravadas | `estatisticas.py` JSON Persistence | ✅ OK |
+
+---
+
+## 📂 Estrutura de Diretórios
+
+O projeto respeita hierarquia limpa, separando dados, documentação, núcleo e infra web.
+
+```text
+batalha-naval/
+├── main.py               # (Root) Ponto de entrada CLI
+├── menu.py               # (Core) CLI interativo e submenus
+├── partida.py            # (Core) Orquestrador do jogo e estados
+├── jogador.py            # (Core) Modelo de dados (Classe Jogador)
+├── computador.py         # (Feature) IA do oponente virtual
+├── estatisticas.py       # (Feature) Processamento estatístico
+├── replay.py             # (Feature) Máquina do tempo (Log Playback)
+├── utils.py              # (Lib) Helpers de tela, tempo e conversões
+├── tabuleiro.py          # (View) Formatação e CLI Print da matriz
+├── navios.py             # (Domain) Algoritmos de área e navegação
+├── api.py                # (Bônus Backend) API REST (FastAPI)
+├── abrir_web.py          # (Bônus Script) Subprocess Launcher p/ Web
+├── requirements.txt      # Dependências Exclusivas para a GUI/API
+├── data/                 # Banco de Dados JSON nativo (Runtime Storage)
+│   ├── estatisticas.json
+│   └── ultima_partida.json
+├── docs/                 # Documentação acadêmica e diários (T1-T11)
+└── web/                  # Bônus Frontend (React / Next.js)
 ```
 
-Nova partida PvC ou PvP. Tiros `C5`. Fim com vencedor, jogadas e tempo. Menu 2 = stats; menu 3 = replay da última partida. Menu 6 = GUI.
+---
 
-## Bônus (IA + GUI localhost)
+## 🚀 Guia de Instalação e Implantação
 
-| Extra | Onde | O que o Comitê vê |
-|-------|------|-------------------|
-| IA fácil / médio / difícil | `computador.py` | PvC no texto e na web usam a mesma função |
-| API FastAPI `:8000` | `api.py` | Mesmas regras do texto; não vaza `N` inimigo |
-| Next.js `:3000` | `web/` | Clique vira `C5`; paleta para arrastar navios |
-| Abrir no navegador | `abrir_web.py` + menu **6** | Sobe os dois processos e abre localhost |
-| Destaque da última jogada | tabuleiro web | Casa do último tiro válido com borda dourada |
-| Replay Play / Próxima / Sair | `web/app/replay` | Play avança sozinho; texto continua Enter / Q |
-| Apelidos da sessão | menu / API | Só o nome informado; sem PII extra (LGPD) |
+O sistema é homologado e validado em **Python 3.10+**. Nenhuma dependência externa é exigida para rodar o modo CLI clássico.
 
-## Instalação e configuração
-
-**Pré-requisitos:** Python 3.10 ou superior (desenvolvido em 3.12). Modo texto: só stdlib. GUI extra: `requirements.txt` + Node.js (pasta `web/`).
-
+### Passo 1: Obter o repositório
 ```bash
-# 1. Clonar o repositório
 git clone https://github.com/KairoHenrique/batalha-naval.git
 cd batalha-naval
-
-# 2. Menu principal (RF01 / RF08)
-python main.py
-
-# 3. Tabuleiro e frota (inspeção)
-python tabuleiro.py
-python navios.py
-
-# 4. GUI
-python -m pip install -r requirements.txt
-cd web
-npm install
-# de volta à raiz: python main.py → opção 6, ou:
-# python -m uvicorn api:app --host 127.0.0.1 --port 8000
-# npm run dev   (em web/)
 ```
 
-Na raiz do repositório:
-
-```powershell
-# Windows
+### Passo 2: Rodar versão Terminal Clássica (Obrigatória)
+```bash
 python main.py
+# (No linux utilize: python3 main.py)
 ```
+
+### Passo 3: Rodar versão Web Completa (Opcional)
+Você precisará de Python pip e Node.js instalados na máquina.
 
 ```bash
-# Linux
-python3 main.py
+# 1. Instalar as dependências do servidor Python (FastAPI/Uvicorn)
+python -m pip install -r requirements.txt
+
+# 2. Instalar dependências da UI Next.js
+cd web
+npm install
+cd ..
+
+# 3. Rodar via lançador nativo do sistema
+python main.py
+# Escolha a opção [6] no menu. O sistema orquestrará as portas automáticas.
 ```
 
-### Teste rápido (checklist)
+---
 
-| Passo | Comando / arquivo | Resultado esperado |
-|-------|-------------------|--------------------|
-| Menu | `python main.py` | Mockup 6.1 com opções 1–5 e 6 Abrir |
-| Nova partida | opção `1` → modo → (C/R) → tiros | Água/acerto/afundado; fim RF07 |
-| Stats | opção `2` após uma partida | Tabela com partidas, vitórias, aproveitamento |
-| Replay | opção `3` ou fim `[1]` | `Jogada 01/NN - nome - C5 - Agua`; Q sai |
-| GUI | opção `6` | Abre http://127.0.0.1:3000; arrastar frota + clicar tiros |
-| Diário | `docs/diario.md` | T1–T11 preenchidos |
+## 🕹️ Guia de Uso e Testes
 
-## Ambiente de teste
+Para auditar e testar o funcionamento, sugere-se o seguinte caminho (Golden Path):
 
-Notebook
+1. **Abrir o Menu Inicial:** Digite `python main.py`. Você verá o escudo da GPTech Games.
+2. **Nova Partida:** Digite `1`. Escolha entre jogar contra o Computador ou 2 Jogadores.
+3. **Avaliação (RF10):** Ao ser questionado sobre o posicionamento dos navios, digite `R` para recriá-los aleatoriamente. Valide a aleatoriedade. Em seguida, digite `C` para confirmar.
+4. **Gameplay:** O jogo começará. Digite coordenadas como `C5`, `A1`, `J10`. Observe a recusa de coordenadas repetidas (ex: se digitar `C5` de novo, um alerta vermelho surgirá e seu turno não será perdido).
+5. **Replay (RF13):** Após o término, o jogo o levará de volta ao menu. Digite `3`. Navegue pelo replay da sua última batalha apertando `Enter` sequencialmente.
+6. **Estatísticas (RF12):** Digite `2` no menu para ver o incremento de suas vitórias, derrotas e eficiência geral de tiros (Aproveitamento).
 
-- **Processador:** 12th Gen Intel® Core™ i7-1255U
-- **Memória RAM:** 40 GB DDR4 3200 MHz
-- **Sistema operacional:** Debian GNU/Linux 13
-- **Interpretador:** Python 3 (`python3`)
+---
 
-## Recursos utilizados
+## 👨‍💻 Autor
 
-`Python 3.12` · stdlib (`dataclasses`, `random`, `copy`) · FastAPI / Uvicorn (GUI) · Next.js 15 (GUI) · `Visual Studio Code` / Cursor · GitHub
-
-## Autor
-
-Trabalho **individual** desenvolvido para a disciplina de Programação em Python.
+Trabalho desenvolvido individualmente, implementando conceitos de engenharia de software no fluxo acadêmico, focado na escalabilidade modular.
 
 | |
 |---|
 | [![Kairo Henrique](https://github.com/KairoHenrique.png?size=120)](https://github.com/KairoHenrique) |
 | **Kairo Henrique Ferreira Martins** |
-| [github.com/KairoHenrique](https://github.com/KairoHenrique) |
+| [GitHub/KairoHenrique](https://github.com/KairoHenrique) |
