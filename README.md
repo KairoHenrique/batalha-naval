@@ -100,28 +100,113 @@ Para garantir rastreabilidade, todas as decisões técnicas e de design de produ
 Esta seção disseca o *Core Business* do repositório, focando na complexidade algorítmica.
 
 ### 1. Sistema de Posicionamento (`navios.py`)
-> **`gerar_frota(tabuleiro: list) -> list`**
+> **`gerar_frota()`**
 - **Responsabilidade:** Gera posições garantindo limites geográficos da matriz e evitando colisões.
-- **Lógica Interna:** Utiliza um laço `while` para cada navio. Tira aleatoriamente linha, coluna e orientação (Horizontal/Vertical). Se `horizontal`, verifica se `coluna + tamanho_navio <= 10`. Após validar limites, checa se as casas já possuem `'N'` (navio). Se sim, descarta e tenta outra posição. Após posicionar, registra na instância (dataclass) as casas ocupadas.
-- **Retorno:** Retorna a matriz atualizada do tabuleiro e a lista dos navios com seus estados internos (para verificar afundamentos depois).
+- **Lógica Interna:** Utiliza um laço de repetição limitando tentativas. Sorteia linha, coluna e orientação (Horizontal/Vertical). Checa se as casas já possuem navios. Se sim, descarta e tenta outra posição. Após posicionar todos, registra na `dataclass`.
+
+<details>
+<summary><b>👨‍💻 Ver código fonte (gerar_frota)</b></summary>
+
+```python
+def gerar_frota() -> tuple[Tabuleiro, list[Navio]]:
+    """Cria tabuleiro novo e posiciona a frota sem sobreposicao."""
+    for _ in range(MAX_TENTATIVAS_FROTA):
+        tabuleiro = criar_tabuleiro()
+        navios: list[Navio] = []
+        posicionou_todos = True
+        
+        for tipo, tamanho in COMPOSICAO_FROTA:
+            navio = _encaixar_navio(tabuleiro, tipo, tamanho)
+            if navio is None:
+                posicionou_todos = False
+                break
+            desenhar_navio(tabuleiro, navio)
+            navios.append(navio)
+            
+        if posicionou_todos:
+            return tabuleiro, navios
+            
+    raise RuntimeError("Nao foi possivel posicionar a frota.")
+```
+</details>
 
 ### 2. Motor de Turnos e Regras (`partida.py`)
-> **`aplicar_tiro(linha: int, coluna: int, tabuleiro_inimigo: list, frota_inimiga: list) -> str`**
-- **Responsabilidade:** Processa de forma atômica o impacto de um tiro (Água, Acerto, Afundado).
-- **Lógica Interna:** Inspeciona `tabuleiro_inimigo[linha][coluna]`.
-  - Se `~` (Água): Substitui por `O` e retorna `"Água"`.
-  - Se `N` (Navio): Substitui por `X`. O algoritmo itera sobre a `frota_inimiga` para encontrar a qual navio a casa pertencia e incrementa o contador de "danos" desse navio. Verifica se `danos == tamanho`, se sim, sinaliza navio afundado.
-- **Relevância:** Esta função é consumida tanto no loop do console quanto na rota `POST /tiro` da API Web.
+> **`aplicar_tiro(partida: Partida, texto_coordenada: str) -> ResultadoJogada`**
+- **Responsabilidade:** Processa de forma atômica o impacto de um tiro (Água, Acerto, Afundado) e protege contra entradas inválidas.
+- **Lógica Interna:** Faz o parse do input. Verifica no histórico (`tiros_feitos`) se aquela posição já foi jogada. Se já foi, retorna erro avisando para o Game Loop ignorar o turno. Se for válida, encaminha para a resolução do disparo.
+
+<details>
+<summary><b>👨‍💻 Ver código fonte (aplicar_tiro)</b></summary>
+
+```python
+def aplicar_tiro(partida: Partida, texto_coordenada: str) -> ResultadoJogada:
+    """Aplica um disparo. Jogada invalida ou repetida nao consome a rodada."""
+    atacante = partida.atacante()
+    
+    try:
+        posicao = parse_coordenada(texto_coordenada)
+    except ValueError as erro:
+        return ResultadoJogada(valida=False, mensagem=str(erro), jogador=atacante.nome)
+
+    if posicao_ja_jogada(atacante.tiros_feitos, posicao):
+        coordenada = formatar_coordenada(*posicao)
+        return ResultadoJogada(
+            valida=False,
+            mensagem=mensagem_jogada_repetida(coordenada),
+            jogador=atacante.nome
+        )
+
+    return _resolver_disparo(partida, atacante, posicao, formatar_coordenada(*posicao))
+```
+</details>
 
 ### 3. Parse e Validações (`utils.py`)
 > **`parse_coordenada(entrada: str) -> tuple[int, int]`**
-- **Responsabilidade:** Converter string suja (`" c 5 "`, `"A10"`, `"j-1"`) em índices válidos da matriz computacional ou barrar exceções.
-- **Lógica Interna:** Utiliza conversão baseada em tabela ASCII `ord(letra) - ord('A')` para captar colunas, limitadas de 0 a 9. Valida tipagem da parte numérica usando conversão de string. Caso a validação falhe (coordenada fora de escopo, tipo Z99), lança uma exceção tratada suavemente pelo Game Loop pedindo nova entrada, impedindo o programa de quebrar (Crash Safety).
+- **Responsabilidade:** Converter string suja (`" c 5 "`, `"A10"`, `"j-1"`) em índices de matriz ou barrar erros (Crash Safety).
+
+<details>
+<summary><b>👨‍💻 Ver código fonte (parse_coordenada)</b></summary>
+
+```python
+def parse_coordenada(entrada: str) -> tuple[int, int]:
+    """Ex: 'C5' -> (4, 2) | Linha 4 (idx=4), Col C (idx=2)."""
+    limpa = entrada.strip().upper()
+    if len(limpa) < 2:
+        raise ValueError("Coordenada muito curta.")
+    
+    letra, numero = limpa[0], limpa[1:]
+    if not ('A' <= letra <= 'J'):
+        raise ValueError("Coluna deve ser de A a J.")
+    if not numero.isdigit() or not (1 <= int(numero) <= 10):
+        raise ValueError("Linha deve ser de 1 a 10.")
+        
+    coluna = ord(letra) - ord('A')
+    linha = int(numero) - 1
+    return linha, coluna
+```
+</details>
 
 ### 4. Inteligência Artificial (`computador.py`)
-> **`executar_turno_computador(dificuldade: str, estado_memoria: dict) -> tuple`**
-- **Responsabilidade:** Determinar a melhor ação para o bot.
-- **Lógica Interna (Modo Difícil):** O bot mantém um dicionário em memória. Se não tiver um "alvo na mira" (navio parcialmente acertado), ele atira usando um padrão de "tabuleiro de xadrez" (linha + coluna divisível por 2), otimizando a busca. Ao acertar um navio, o estado muda para `CAÇADA` e ele enfileira os vizinhos laterais e verticais na memória, eliminando-os caso resulte em água ou erro, até o navio afundar.
+> **`executar_turno_computador(...) -> ResultadoJogada`**
+- **Responsabilidade:** Delega a ação baseada no estado de memória do bot para tomar a melhor decisão entre casas livres.
+
+<details>
+<summary><b>👨‍💻 Ver código fonte (turno_computador)</b></summary>
+
+```python
+def _turno_computador(partida: Partida) -> ResultadoJogada:
+    """RN05: dispara uma casa valida usando o nivel de IA."""
+    atacante = partida.atacante()
+    livres = casas_disponiveis(atacante.tiros_feitos)
+    
+    estado = partida.estado_ia or criar_estado_ia("facil")
+    linha, coluna = escolher_jogada(livres, estado)
+    
+    resultado = aplicar_tiro(partida, formatar_coordenada(linha, coluna))
+    registrar_resultado_ia(estado, (linha, coluna), resultado.resultado)
+    return resultado
+```
+</details>
 
 ---
 
