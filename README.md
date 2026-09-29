@@ -269,33 +269,54 @@ batalha-naval/
 
 O sistema é homologado e validado em **Python 3.10+**. Nenhuma dependência externa é exigida para rodar o modo CLI clássico.
 
-### Passo 1: Obter o repositório
+### Passo 1: Obter o repositório (Todos os Sistemas)
 ```bash
 git clone https://github.com/KairoHenrique/batalha-naval.git
 cd batalha-naval
 ```
 
-### Passo 2: Rodar versão Terminal Clássica (Obrigatória)
-```bash
+### 🪟 Instalação e Execução (Windows)
+
+**Versão Terminal Clássica:**
+```powershell
 python main.py
-# (No linux utilize: python3 main.py)
 ```
 
-### Passo 3: Rodar versão Web Completa (Opcional)
-Você precisará de Python pip e Node.js instalados na máquina.
-
-```bash
-# 1. Instalar as dependências do servidor Python (FastAPI/Uvicorn)
+**Versão Web Completa (API + Next.js):**
+```powershell
+# 1. Instalar as dependências do servidor Python
 python -m pip install -r requirements.txt
 
-# 2. Instalar dependências da UI Next.js
+# 2. Instalar dependências do Frontend (Next.js)
 cd web
 npm install
 cd ..
 
-# 3. Rodar via lançador nativo do sistema
+# 3. Executar
 python main.py
-# Escolha a opção [6] no menu. O sistema orquestrará as portas automáticas.
+# Escolha a opção [6] no menu principal.
+```
+
+### 🐧 Instalação e Execução (Linux / macOS)
+
+**Versão Terminal Clássica:**
+```bash
+python3 main.py
+```
+
+**Versão Web Completa (API + Next.js):**
+```bash
+# 1. Instalar as dependências do servidor Python
+python3 -m pip install -r requirements.txt
+
+# 2. Instalar dependências do Frontend (Next.js)
+cd web
+npm install
+cd ..
+
+# 3. Executar
+python3 main.py
+# Escolha a opção [6] no menu principal.
 ```
 
 ---
